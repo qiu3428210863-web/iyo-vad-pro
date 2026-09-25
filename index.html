@@ -58,20 +58,5 @@
 <link href="assets/7adc6e2421b24e.css" rel="stylesheet"/>
 <!--<script defer src="https://iyo2.vercel.app/app.js"></script>-->
 <!--<script defer src="http://localhost:6545/app.js" onerror="(function(){const script=document.createElement('script');script.src='https://iyo2.vercel.app/app.js';script.defer='true';document.head.appendChild(script);})()"></script>-->
-<script>document.addEventListener('click',function(e){let a=e.target.closest('a');if(!a)return;let h=a.getAttribute('href')||'';if(h==='#'){e.preventDefault();return}if(/^https?:/i.test(h)&&!h.startsWith(location.origin)&&!h.startsWith('https://www.amazon.com/dp/B0F62R84FS')&&!h.startsWith('https://www.amazon.com/stores/Mbzoey/')){e.preventDefault()}});</script><script src="assets/iyo-app.js"></script><script>document.addEventListener('click',function(e){const a=e.target.closest('a[data-mbzoey-product]');if(!a)return;e.preventDefault();e.stopImmediatePropagation();window.open('https://www.amazon.com/dp/B0F62R84FS','_blank','noopener,noreferrer')},true);</script><script data-mbzoey-layout="separate-hero">(() => {
-  const split = () => {
-    const root = document.querySelector('.section.is--vad-pro');
-    const hero = root?.querySelector('.vad__hero-wrap');
-    const highlight = root?.querySelector(':scope > .vad__hero-wrap > .highlight__wrapper');
-    const cards = root?.querySelector(':scope > .cards__wrap');
-    if (!root || !hero || (!highlight && !cards) || document.querySelector('.mbzoey-hero-below')) return;
-    const below = document.createElement('section');
-    below.className = 'mbzoey-hero-below';
-    below.setAttribute('aria-label', 'Mbzoey 产品亮点');
-    root.insertAdjacentElement('afterend', below);
-    if (highlight) below.appendChild(highlight);
-    if (cards) below.appendChild(cards);
-  };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', split, {once:true});
-  else split();
-})();</script></body></html>
+<script>document.addEventListener('click',function(e){let a=e.target.closest('a');if(!a)return;let h=a.getAttribute('href')||'';if(h==='#'){e.preventDefault();return}if(/^https?:/i.test(h)&&!h.startsWith(location.origin)&&!h.startsWith('https://www.amazon.com/dp/B0F62R84FS')&&!h.startsWith('https://www.amazon.com/stores/Mbzoey/')){e.preventDefault()}});</script><script src="assets/mbzoey-layout.js"></script><script src="assets/iyo-app.js"></script><script>document.addEventListener('click',function(e){const a=e.target.closest('a[data-mbzoey-product]');if(!a)return;e.preventDefault();e.stopImmediatePropagation();window.open('https://www.amazon.com/dp/B0F62R84FS','_blank','noopener,noreferrer')},true);</script>
+ </body></html>
