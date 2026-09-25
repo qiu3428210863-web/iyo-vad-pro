@@ -29,16 +29,16 @@ body {
 .section.is--vad-pro {
   display: block;
   height: 100svh;
-  min-height: 560px;
-  max-height: 1200px;
+  min-height: 0;
+  max-height: none;
   overflow: clip;
   position: relative;
 }
 
 .section.is--vad-pro .vad__hero-wrap {
   height: 100svh;
-  min-height: 560px;
-  max-height: 1200px;
+  min-height: 0;
+  max-height: none;
   overflow: hidden;
 }
 
@@ -199,10 +199,6 @@ body {
 
   .vad__text-wrap {
     max-width: calc(100vw - 2 * var(--page-gutter));
-  }
-
-  .section.is--vad-pro .vad__hero-wrap {
-    min-height: 560px;
   }
 
   .mbzoey-hero-below .highlight__wrapper {
