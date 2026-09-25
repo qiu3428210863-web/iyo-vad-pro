@@ -24,10 +24,15 @@ body {
   max-width: 100%;
 }
 
-/* Keep the hero at one viewport and let the remaining component row continue
-   as normal page content below it. */
+/* Keep the hero at one viewport. Highlight cards are moved into the
+   independent flow section immediately below it by the layout script. */
 .section.is--vad-pro {
-  display: contents;
+  display: block;
+  height: 100svh;
+  min-height: 560px;
+  max-height: 1200px;
+  overflow: clip;
+  position: relative;
 }
 
 .section.is--vad-pro .vad__hero-wrap {
@@ -37,9 +42,54 @@ body {
   overflow: hidden;
 }
 
+.mbzoey-hero-below {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  background: #101010;
+}
+
+.mbzoey-hero-below .highlight__wrapper {
+  position: relative;
+  inset: auto;
+  width: min(100% - 2 * var(--page-gutter), 1440px);
+  min-height: clamp(260px, 34vw, 520px);
+  margin: 0 auto;
+  padding-block: clamp(36px, 7vw, 110px);
+  box-sizing: border-box;
+  align-items: flex-start;
+}
+
+.mbzoey-hero-below .highlight__wrap {
+  width: min(100%, 720px);
+  max-width: 100%;
+}
+
+.mbzoey-hero-below .highlight-text-h {
+  overflow-wrap: normal;
+  word-break: keep-all;
+}
+
+.mbzoey-hero-below .cards__wrap {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  min-height: clamp(180px, 28vw, 420px);
+  margin: 0;
+  overflow: hidden;
+}
+
+.mbzoey-hero-below .cards__wrap .spacing__wrap {
+  position: relative;
+  inset: auto;
+}
+
+/* Fallback for a script-disabled preview: keep the highlight in a bounded row. */
 .section.is--vad-pro .highlight__wrapper {
   position: absolute;
-  inset: auto var(--page-gutter) clamp(28px, 7vh, 96px);
+  inset: auto var(--page-gutter) 24px;
   width: auto;
   max-width: none;
 }
@@ -153,6 +203,12 @@ body {
 
   .section.is--vad-pro .vad__hero-wrap {
     min-height: 560px;
+  }
+
+  .mbzoey-hero-below .highlight__wrapper {
+    width: calc(100% - 2 * var(--page-gutter));
+    min-height: 300px;
+    padding-block: 34px 48px;
   }
 
   .section.is--vad-pro .highlight__wrapper {
