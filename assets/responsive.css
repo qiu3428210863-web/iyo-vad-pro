@@ -40,6 +40,90 @@ body {
   min-height: 0;
   max-height: none;
   overflow: hidden;
+  isolation: isolate;
+}
+
+/* The interactive photo replaces the original VAD hero artwork while the
+   existing copy, navigation, and runtime animations remain available above it. */
+.section.is--vad-pro .vad__visual-wrap-new,
+.section.is--vad-pro .vad__img-wrap {
+  display: none !important;
+}
+
+.mbzoey-shave-interaction {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  touch-action: none;
+  background: #e9e9e9;
+  cursor: none;
+}
+
+.mbzoey-shave-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.mbzoey-shave-reveal {
+  z-index: 1;
+}
+
+.mbzoey-shaver-cursor {
+  position: absolute;
+  z-index: 2;
+  width: clamp(64px, 9vw, 132px);
+  height: auto;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(-18deg);
+  transform-origin: 50% 50%;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, .24));
+  transition: opacity .18s ease, transform .18s ease;
+}
+
+.mbzoey-shaver-cursor.is-visible {
+  opacity: .96;
+}
+
+.mbzoey-shave-interaction.is-shaving .mbzoey-shaver-cursor {
+  transform: translate(-50%, -50%) rotate(-18deg) scale(.92);
+}
+
+.mbzoey-shave-hint {
+  position: absolute;
+  z-index: 3;
+  right: clamp(16px, 4vw, 64px);
+  bottom: clamp(18px, 4vw, 46px);
+  padding: .7em 1em;
+  border: 1px solid rgba(0, 0, 0, .16);
+  border-radius: 999px;
+  color: rgba(0, 0, 0, .7);
+  background: rgba(255, 255, 255, .5);
+  backdrop-filter: blur(12px);
+  font-size: clamp(12px, 1.1vw, 16px);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.section.is--vad-pro .vad__text-wrap {
+  z-index: 4;
+  color: #101010;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+.section.is--vad-pro .vad__text-wrap .paragraph,
+.section.is--vad-pro .vad__text-wrap .h-h1 {
+  text-shadow: 0 1px 12px rgba(255, 255, 255, .18);
+}
+
+.section.is--vad-pro .centered-nav {
+  z-index: 6;
 }
 
 .mbzoey-hero-below {
@@ -178,6 +262,11 @@ body {
 @media (max-width: 767px) {
   html {
     scroll-padding-top: 84px;
+  }
+
+  .mbzoey-shave-hint {
+    right: 16px;
+    bottom: 18px;
   }
 
   .centered-nav {
