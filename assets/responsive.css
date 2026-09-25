@@ -24,6 +24,38 @@ body {
   max-width: 100%;
 }
 
+/* Keep the hero at one viewport and let the remaining component row continue
+   as normal page content below it. */
+.section.is--vad-pro {
+  display: contents;
+}
+
+.section.is--vad-pro .vad__hero-wrap {
+  height: 100svh;
+  min-height: 560px;
+  max-height: 1200px;
+  overflow: hidden;
+}
+
+.section.is--vad-pro .highlight__wrapper {
+  position: absolute;
+  inset: auto var(--page-gutter) clamp(28px, 7vh, 96px);
+  width: auto;
+  max-width: none;
+}
+
+.section.is--vad-pro .cards__wrap {
+  position: relative;
+  min-height: clamp(180px, 28vw, 420px);
+  width: 100%;
+  overflow: hidden;
+}
+
+.section.is--vad-pro .cards__wrap .spacing__wrap {
+  position: relative;
+  inset: auto;
+}
+
 .centered-nav {
   max-width: calc(100vw - 2 * var(--page-gutter));
 }
@@ -117,6 +149,15 @@ body {
 
   .vad__text-wrap {
     max-width: calc(100vw - 2 * var(--page-gutter));
+  }
+
+  .section.is--vad-pro .vad__hero-wrap {
+    min-height: 560px;
+  }
+
+  .section.is--vad-pro .highlight__wrapper {
+    inset-inline: var(--page-gutter);
+    bottom: clamp(20px, 5vh, 48px);
   }
 
   .vad__title h1,
