@@ -180,6 +180,12 @@ body {
   pointer-events: none;
 }
 
+/* The portrait is the hero focal point now; keep its center clear of the
+   original title stack while leaving the lower product copy intact. */
+.section.is--vad-pro .vad__hero-wrap > .vad__text-wrap {
+  display: none !important;
+}
+
 .section.is--vad-pro .vad__text-wrap .paragraph,
 .section.is--vad-pro .vad__text-wrap .h-h1 {
   text-shadow: 0 1px 12px rgba(255, 255, 255, .18);
