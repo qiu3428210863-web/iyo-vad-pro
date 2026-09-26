@@ -57,6 +57,9 @@ body {
   width: 100%;
   height: 100%;
   pointer-events: none;
+  transform: translate3d(0, var(--mbzoey-parallax-y, 0px), 0);
+  transform-origin: center;
+  will-change: transform;
 }
 
 .section.is--vad-pro .vad__visual-wrap-new .vad__svg-wrap {
@@ -84,15 +87,16 @@ body {
   cursor: none;
 }
 
-/* A lightweight moving texture gives both content pages the same downward
-   background motion without moving the text, navigation, or shave hit area. */
+/* Scroll-linked parallax layers. The content stays in place while the
+   background media follows the scroll position with a delayed, eased drift. */
 .mbzoey-scroll-backdrop {
   position: absolute;
   inset: -18% -8%;
   z-index: 1;
   pointer-events: none;
   opacity: .13;
-  transform: translate3d(0, var(--mbzoey-scroll-y, 0px), 0);
+  transform: translate3d(0, var(--mbzoey-parallax-y, 0px), 0);
+  transform-origin: center;
   will-change: transform;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, .2), transparent 24%, transparent 72%, rgba(16, 16, 16, .12)),
@@ -122,7 +126,8 @@ body {
   height: auto;
   pointer-events: none;
   opacity: .28;
-  transform: translate3d(0, var(--mbzoey-scroll-y, 0px), 0);
+  transform: translate3d(0, var(--mbzoey-parallax-y, 0px), 0);
+  transform-origin: center;
   will-change: transform;
 }
 
@@ -145,6 +150,9 @@ body {
   width: 100%;
   height: 100%;
   pointer-events: none;
+  transform: translate3d(0, var(--mbzoey-parallax-media-y, 0px), 0);
+  transform-origin: center;
+  will-change: transform;
 }
 
 .mbzoey-shave-reveal {
@@ -332,7 +340,9 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mbzoey-scroll-backdrop {
+  .mbzoey-scroll-backdrop,
+  .mbzoey-line-field,
+  .mbzoey-shave-canvas {
     transform: none !important;
   }
 }

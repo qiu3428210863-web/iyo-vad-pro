@@ -398,30 +398,64 @@
     draw();
   };
 
+  // Scroll-scrubbed parallax: each background layer follows the section's
+  // scroll progress with a small spring-like delay. The hero and the next
+  // section keep their content in normal flow; only media layers drift.
   let scrollFrame = 0;
+  const parallax = {
+    heroBackdrop: 0,
+    belowBackdrop: 0,
+    heroLine: 0,
+    belowLine: 0,
+    heroMedia: 0,
+  };
+  const clamp01 = (value) => Math.min(1, Math.max(0, value));
+  const setParallax = (element, variable, value) => {
+    if (element) element.style.setProperty(variable, `${value.toFixed(2)}px`);
+  };
+
   const updateScrollBackdrops = () => {
-    scrollFrame = 0;
     const viewportHeight = window.innerHeight || 1;
+    const heroRect = hero.getBoundingClientRect();
+    const belowRect = below.getBoundingClientRect();
+    const heroProgress = clamp01(-heroRect.top / Math.max(1, heroRect.height));
+    // Keep the next page's background moving while it enters the viewport,
+    // so it arrives later than the page surface and creates the handoff seen
+    // in the reference video.
+    const belowProgress = clamp01(
+      (viewportHeight - belowRect.top) /
+        (viewportHeight + Math.max(1, belowRect.height)),
+    );
+
     const targets = [
-      {element: heroBackdrop, section: hero},
-      {element: belowBackdrop, section: below},
-      {element: heroLineField, section: hero},
-      {element: belowLineField, section: below},
+      {element: heroBackdrop, key: 'heroBackdrop', variable: '--mbzoey-parallax-y', value: heroProgress * 180},
+      {element: belowBackdrop, key: 'belowBackdrop', variable: '--mbzoey-parallax-y', value: belowProgress * 180},
+      {element: heroLineField, key: 'heroLine', variable: '--mbzoey-parallax-y', value: heroProgress * 125},
+      {element: belowLineField, key: 'belowLine', variable: '--mbzoey-parallax-y', value: belowProgress * 125},
     ];
-    for (const {element, section} of targets) {
-      if (!element || !section) continue;
-      const rect = section.getBoundingClientRect();
-      const progress = Math.min(1, Math.max(0,
-        (viewportHeight - rect.top) / (viewportHeight + rect.height),
-      ));
-      const shift = (progress - 0.5) * 160;
-      element.style.setProperty('--mbzoey-scroll-y', `${shift.toFixed(2)}px`);
+    const mediaValue = heroProgress * 150;
+    const mediaElements = [baseCanvas, personCanvas, revealCanvas];
+    let moving = false;
+    for (const {element, key, variable, value} of targets) {
+      if (!element) continue;
+      const next = parallax[key] + (value - parallax[key]) * 0.12;
+      parallax[key] = next;
+      setParallax(element, variable, next);
+      if (Math.abs(value - next) > 0.25) moving = true;
     }
+    const mediaNext = parallax.heroMedia + (mediaValue - parallax.heroMedia) * 0.12;
+    parallax.heroMedia = mediaNext;
+    mediaElements.forEach((element) => {
+      if (!element) return;
+      setParallax(element, '--mbzoey-parallax-media-y', mediaNext);
+    });
+    if (Math.abs(mediaValue - mediaNext) > 0.25) moving = true;
+    if (moving) scrollFrame = window.requestAnimationFrame(updateScrollBackdrops);
+    else scrollFrame = 0;
   };
 
   const scheduleScrollBackdrop = () => {
-    if (scrollFrame) return;
-    scrollFrame = window.requestAnimationFrame(updateScrollBackdrops);
+    if (!scrollFrame) scrollFrame = window.requestAnimationFrame(updateScrollBackdrops);
   };
 
   interaction.addEventListener('pointermove', updatePointer, {passive: false});
