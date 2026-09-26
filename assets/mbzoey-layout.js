@@ -27,10 +27,12 @@
   const baseCanvas = interaction.querySelector('.mbzoey-shave-base');
   const revealCanvas = interaction.querySelector('.mbzoey-shave-reveal');
   const cursor = interaction.querySelector('.mbzoey-shaver-cursor');
-  const base = new Image();
-  const beard = new Image();
-  base.src = 'assets/mbzoey-beard-base.png';
-  beard.src = 'assets/mbzoey-beard-mask.png';
+  // Start with the bearded portrait (图一) and reveal the clean portrait
+  // (图二) through the feathered shave mask.
+  const background = new Image();
+  const maskImage = new Image();
+  background.src = 'assets/mbzoey-beard-mask.png';
+  maskImage.src = 'assets/mbzoey-beard-base.png';
 
   const state = {points: [], active: false, rect: null, scale: 1, offsetX: 0, offsetY: 0};
   const source = {width: 2304, height: 1728};
@@ -47,11 +49,18 @@
   };
 
   const imageLayout = (rect) => {
-    state.scale = Math.max(rect.width / source.width, rect.height / source.height);
+    const coverScale = Math.max(rect.width / source.width, rect.height / source.height);
+    const narrow = rect.width < 640;
+    const zoom = narrow ? 1.08 : 1.12;
+    const shiftY = Math.min(
+      Math.max(rect.height * (narrow ? 0.07 : 0.14), narrow ? 28 : 56),
+      narrow ? 80 : 150,
+    );
+    state.scale = coverScale * zoom;
     const width = source.width * state.scale;
     const height = source.height * state.scale;
     state.offsetX = (rect.width - width) / 2;
-    state.offsetY = (rect.height - height) / 2;
+    state.offsetY = (rect.height - height) / 2 + shiftY;
   };
 
   const pointToSource = (event) => {
@@ -78,12 +87,12 @@
   };
 
   const draw = () => {
-    if (!state.rect || !base.complete || !beard.complete) return;
+    if (!state.rect || !background.complete || !maskImage.complete) return;
     const dpr = window.devicePixelRatio || 1;
     const baseContext = setupCanvas(baseCanvas, state.rect, dpr);
     const revealContext = setupCanvas(revealCanvas, state.rect, dpr);
-    drawCover(baseContext, base, state.rect);
-    drawCover(revealContext, beard, state.rect);
+    drawCover(baseContext, background, state.rect);
+    drawCover(revealContext, maskImage, state.rect);
 
     const maskCanvas = document.createElement('canvas');
     maskCanvas.width = revealCanvas.width;
@@ -159,5 +168,5 @@
   interaction.addEventListener('pointerleave', stop);
   interaction.addEventListener('pointerenter', updatePointer, {passive: false});
   window.addEventListener('resize', resize, {passive: true});
-  Promise.all([base.decode?.() || Promise.resolve(), beard.decode?.() || Promise.resolve()]).then(resize);
+  Promise.all([background.decode?.() || Promise.resolve(), maskImage.decode?.() || Promise.resolve()]).then(resize);
 })();
