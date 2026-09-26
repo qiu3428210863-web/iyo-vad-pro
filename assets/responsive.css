@@ -49,7 +49,27 @@ body {
 
 /* The interactive photo replaces the original VAD hero artwork while the
    existing copy, navigation, and runtime animations remain available above it. */
-.section.is--vad-pro .vad__visual-wrap-new,
+.section.is--vad-pro .vad__visual-wrap-new {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex !important;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.section.is--vad-pro .vad__visual-wrap-new .vad__svg-wrap {
+  inset: 0;
+  opacity: .2;
+}
+
+.section.is--vad-pro .vad__visual-wrap-new .vad__visual {
+  width: 100%;
+  height: 100%;
+  opacity: .32 !important;
+}
+
 .section.is--vad-pro .vad__img-wrap {
   display: none !important;
 }
@@ -88,6 +108,34 @@ body {
     linear-gradient(180deg, transparent, rgba(255, 255, 255, .08) 48%, transparent),
     repeating-linear-gradient(90deg, transparent 0 5.5vw, rgba(255, 255, 255, .08) 5.5vw 5.6vw, transparent 5.6vw 11vw),
     repeating-linear-gradient(0deg, transparent 0 90px, rgba(255, 255, 255, .06) 90px 92px, transparent 92px 220px);
+}
+
+/* Reuse the source page's animated SVG line field in the lower flow section.
+   The parent carries the scroll-linked drift while individual SVG paths keep
+   their slow, staggered vertical motion. */
+.mbzoey-line-field {
+  position: absolute;
+  inset: -18% -8%;
+  z-index: 0;
+  display: flex;
+  width: auto;
+  height: auto;
+  pointer-events: none;
+  opacity: .28;
+  transform: translate3d(0, var(--mbzoey-scroll-y, 0px), 0);
+  will-change: transform;
+}
+
+.mbzoey-line-field .vad__svg-wrap {
+  position: absolute;
+  inset: 0;
+  opacity: .2;
+}
+
+.mbzoey-line-field .vad__visual {
+  width: 100%;
+  height: 100%;
+  opacity: .32 !important;
 }
 
 .mbzoey-shave-canvas {

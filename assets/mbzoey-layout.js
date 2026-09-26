@@ -13,6 +13,16 @@
   belowBackdrop.className = 'mbzoey-scroll-backdrop mbzoey-scroll-backdrop--below';
   belowBackdrop.setAttribute('aria-hidden', 'true');
   below.appendChild(belowBackdrop);
+  const sourceLineField = root.querySelector('.vad__visual-wrap-new');
+  const belowLineField = sourceLineField?.cloneNode(true);
+  if (belowLineField) {
+    belowLineField.classList.add('mbzoey-line-field');
+    belowLineField.removeAttribute('data-module');
+    belowLineField.querySelectorAll('[data-module]').forEach((element) => {
+      element.removeAttribute('data-module');
+    });
+    below.appendChild(belowLineField);
+  }
   root.insertAdjacentElement('afterend', below);
   if (highlight) below.appendChild(highlight);
   if (cards) below.appendChild(cards);
@@ -37,9 +47,44 @@
   const cursor = interaction.querySelector('.mbzoey-shaver-cursor');
   const hint = interaction.querySelector('.mbzoey-shave-hint');
   const heroBackdrop = interaction.querySelector('.mbzoey-scroll-backdrop--hero');
+  const heroLineField = root.querySelector('.vad__visual-wrap-new');
   let hintPositionFrame = 0;
   let hintPositioned = false;
   let hintOverBeard = false;
+  const lineAnimations = [];
+
+  const animateLineField = (field) => {
+    if (!field || !Element.prototype.animate) return;
+    const svg = field.querySelector('.vad__visual');
+    const viewBoxHeight = Number(svg?.viewBox?.baseVal?.height) || 1027;
+    field.querySelectorAll('[class*="vad-line-"]').forEach((line, index) => {
+      try {
+        const bounds = line.getBBox();
+        const startY = -bounds.y;
+        const endY = viewBoxHeight - bounds.height - bounds.y;
+        const duration = 5600 + (index % 7) * 420;
+        const animation = line.animate(
+          [
+            {transform: `translateY(${startY}px)`},
+            {transform: `translateY(${endY}px)`},
+          ],
+          {
+            duration,
+            delay: -(index * 260),
+            iterations: Infinity,
+            direction: 'alternate',
+            easing: 'cubic-bezier(.65, 0, .35, 1)',
+          },
+        );
+        lineAnimations.push(animation);
+      } catch (error) {
+        // SVG getBBox can fail before the field is laid out; the hero module
+        // and the next resize pass will still keep the primary field alive.
+      }
+    });
+  };
+
+  animateLineField(belowLineField);
 
   const updateHintPosition = (event, rect) => {
     const cursorWidth = Math.min(132, Math.max(64, rect.width * .09));
@@ -360,6 +405,8 @@
     const targets = [
       {element: heroBackdrop, section: hero},
       {element: belowBackdrop, section: below},
+      {element: heroLineField, section: hero},
+      {element: belowLineField, section: below},
     ];
     for (const {element, section} of targets) {
       if (!element || !section) continue;
