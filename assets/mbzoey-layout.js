@@ -83,7 +83,28 @@
 
   const state = {points: [], active: false, rect: null, scale: 1, offsetX: 0, offsetY: 0};
   const source = {width: 2304, height: 1728};
-  const beardRegion = {left: 1000, top: 490, right: 1370, bottom: 900};
+  // Source-space polygon that follows the moustache, jaw, and chin. Keeping
+  // this as a polygon prevents eye, forehead, and outer-cheek hits that a
+  // rectangular region would accept.
+  const beardRegion = [
+    {x: 1000, y: 565},
+    {x: 1040, y: 540},
+    {x: 1100, y: 540},
+    {x: 1150, y: 552},
+    {x: 1200, y: 540},
+    {x: 1280, y: 545},
+    {x: 1330, y: 575},
+    {x: 1340, y: 640},
+    {x: 1330, y: 710},
+    {x: 1300, y: 780},
+    {x: 1240, y: 835},
+    {x: 1170, y: 865},
+    {x: 1100, y: 845},
+    {x: 1045, y: 805},
+    {x: 1010, y: 750},
+    {x: 990, y: 680},
+    {x: 995, y: 620},
+  ];
 
   const setupCanvas = (canvas, rect, dpr) => {
     canvas.width = Math.max(1, Math.round(rect.width * dpr));
@@ -117,10 +138,23 @@
     return {x: (x - state.offsetX) / state.scale, y: (y - state.offsetY) / state.scale};
   };
 
-  const isInBeard = ({x, y}) => (
-    x >= beardRegion.left && x <= beardRegion.right &&
-    y >= beardRegion.top && y <= beardRegion.bottom
-  );
+  const sourceToViewport = ({x, y}) => ({
+    x: state.offsetX + x * state.scale,
+    y: state.offsetY + y * state.scale,
+  });
+
+  const isInBeard = ({x, y}) => {
+    let inside = false;
+    for (let i = 0, j = beardRegion.length - 1; i < beardRegion.length; j = i++) {
+      const current = beardRegion[i];
+      const previous = beardRegion[j];
+      const crosses = ((current.y > y) !== (previous.y > y)) &&
+        x < ((previous.x - current.x) * (y - current.y)) /
+          (previous.y - current.y) + current.x;
+      if (crosses) inside = !inside;
+    }
+    return inside;
+  };
 
   const drawCover = (context, image, rect) => {
     context.clearRect(0, 0, rect.width, rect.height);
@@ -157,9 +191,19 @@
     const maskContext = maskCanvas.getContext('2d');
     maskContext.setTransform(dpr, 0, 0, dpr, 0, 0);
     maskContext.clearRect(0, 0, state.rect.width, state.rect.height);
+    maskContext.save();
+    maskContext.beginPath();
+    beardRegion.forEach((point, index) => {
+      const viewportPoint = sourceToViewport(point);
+      if (index === 0) maskContext.moveTo(viewportPoint.x, viewportPoint.y);
+      else maskContext.lineTo(viewportPoint.x, viewportPoint.y);
+    });
+    maskContext.closePath();
+    maskContext.clip();
     for (const point of state.points) {
-      const x = state.offsetX + point.x * state.scale;
-      const y = state.offsetY + point.y * state.scale;
+      const viewportPoint = sourceToViewport(point);
+      const x = viewportPoint.x;
+      const y = viewportPoint.y;
       const radius = 112 * state.scale;
       const gradient = maskContext.createRadialGradient(x, y, radius * 0.18, x, y, radius);
       gradient.addColorStop(0, 'rgba(255,255,255,1)');
@@ -170,6 +214,7 @@
       maskContext.arc(x, y, radius, 0, Math.PI * 2);
       maskContext.fill();
     }
+    maskContext.restore();
     revealContext.globalCompositeOperation = 'destination-in';
     revealContext.drawImage(maskCanvas, 0, 0, state.rect.width, state.rect.height);
     revealContext.globalCompositeOperation = 'source-over';
