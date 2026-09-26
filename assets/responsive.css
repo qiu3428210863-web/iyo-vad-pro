@@ -109,7 +109,7 @@ body {
   opacity: 0;
   visibility: hidden;
   transform: translate3d(var(--mbzoey-hint-left, 0px), var(--mbzoey-hint-top, 0px), 0) translateY(-50%);
-  transition: opacity .12s ease-out, visibility 0s linear .12s, transform .22s ease-out;
+  transition: opacity .18s ease-out, visibility 0s linear .18s, transform .16s ease-out;
   will-change: opacity, transform;
   pointer-events: none;
 }
@@ -137,12 +137,14 @@ body {
   transition-delay: 0s;
 }
 
-.mbzoey-shave-hint.is-positioning {
-  transition: none;
+.mbzoey-shave-hint.is-following.is-over-beard {
+  opacity: 0;
+  visibility: hidden;
+  transition-delay: 0s, .18s, 0s;
 }
 
-.mbzoey-shave-hint.is-moving .mbzoey-shave-hint__inner {
-  transform: scaleX(0);
+.mbzoey-shave-hint.is-positioning {
+  transition: none;
 }
 
 .section.is--vad-pro .vad__text-wrap {

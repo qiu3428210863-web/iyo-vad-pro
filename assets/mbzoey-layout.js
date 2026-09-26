@@ -28,13 +28,13 @@
   const revealCanvas = interaction.querySelector('.mbzoey-shave-reveal');
   const cursor = interaction.querySelector('.mbzoey-shaver-cursor');
   const hint = interaction.querySelector('.mbzoey-shave-hint');
-  let hintIdleTimer;
   let hintPositionFrame = 0;
   let hintPositioned = false;
+  let hintOverBeard = false;
 
   const updateHintPosition = (event, rect) => {
     const cursorWidth = Math.min(132, Math.max(64, rect.width * .09));
-    const gap = Math.max(24, cursorWidth * .55);
+    const gap = Math.max(10, cursorWidth * .14);
     // offsetWidth stays stable while the inner label is collapsed, so edge
     // clamping never jumps when the mouse is moving quickly.
     const width = hint.offsetWidth;
@@ -55,12 +55,10 @@
     hint.classList.add('is-following');
   };
 
-  const markHintMoving = () => {
-    hint.classList.add('is-moving');
-    window.clearTimeout(hintIdleTimer);
-    hintIdleTimer = window.setTimeout(() => {
-      hint.classList.remove('is-moving');
-    }, 520);
+  const updateHintRegion = (insideBeard) => {
+    if (hintOverBeard === insideBeard) return;
+    hintOverBeard = insideBeard;
+    hint.classList.toggle('is-over-beard', insideBeard);
   };
 
   // Start with the bearded portrait (图一) and reveal the clean portrait
@@ -225,13 +223,14 @@
     state.rect = rect;
     imageLayout(rect);
     updateHintPosition(event, rect);
-    markHintMoving();
     cursor.style.left = `${event.clientX - rect.left}px`;
     cursor.style.top = `${event.clientY - rect.top}px`;
     cursor.classList.add('is-visible');
+    const point = pointToSource(event);
+    const insideBeard = isInBeard(point);
+    updateHintRegion(insideBeard);
     if (state.active) {
-      const point = pointToSource(event);
-      if (isInBeard(point)) {
+      if (insideBeard) {
         const previous = state.points[state.points.length - 1];
         if (!previous || Math.hypot(point.x - previous.x, point.y - previous.y) > 18) {
           state.points.push(point);
@@ -259,10 +258,9 @@
   const stop = () => {
     state.active = false;
     interaction.classList.remove('is-shaving');
-    window.clearTimeout(hintIdleTimer);
     window.cancelAnimationFrame(hintPositionFrame);
     hintPositioned = false;
-    hint.classList.remove('is-moving', 'is-following', 'is-positioning');
+    hint.classList.remove('is-following', 'is-positioning');
   };
 
   const resize = () => {
