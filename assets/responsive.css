@@ -49,30 +49,6 @@ body {
 
 /* The interactive photo replaces the original VAD hero artwork while the
    existing copy, navigation, and runtime animations remain available above it. */
-.section.is--vad-pro .vad__visual-wrap-new {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  display: flex !important;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  transform: translate3d(0, var(--mbzoey-parallax-y, 0px), 0);
-  transform-origin: center;
-  will-change: transform;
-}
-
-.section.is--vad-pro .vad__visual-wrap-new .vad__svg-wrap {
-  inset: 0;
-  opacity: .2;
-}
-
-.section.is--vad-pro .vad__visual-wrap-new .vad__visual {
-  width: 100%;
-  height: 100%;
-  opacity: .32 !important;
-}
-
 .section.is--vad-pro .vad__img-wrap {
   display: none !important;
 }

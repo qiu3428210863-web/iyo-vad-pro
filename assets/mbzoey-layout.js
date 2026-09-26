@@ -23,6 +23,10 @@
     });
     below.appendChild(belowLineField);
   }
+  // The original hero SVG line field is legacy artwork. Keep the cloned copy
+  // for the lower section's motion treatment, then remove the hero copy so it
+  // cannot sit on top of the interactive portrait.
+  sourceLineField?.remove();
   root.insertAdjacentElement('afterend', below);
   if (highlight) below.appendChild(highlight);
   if (cards) below.appendChild(cards);
@@ -49,7 +53,6 @@
   cursor.fetchPriority = 'high';
   const hint = interaction.querySelector('.mbzoey-shave-hint');
   const heroBackdrop = interaction.querySelector('.mbzoey-scroll-backdrop--hero');
-  const heroLineField = root.querySelector('.vad__visual-wrap-new');
   let hintPositionFrame = 0;
   let hintPositioned = false;
   let hintOverBeard = false;
@@ -502,7 +505,6 @@
   const parallax = {
     heroBackdrop: 0,
     belowBackdrop: 0,
-    heroLine: 0,
     belowLine: 0,
     heroMedia: 0,
   };
@@ -527,7 +529,6 @@
     const targets = [
       {element: heroBackdrop, key: 'heroBackdrop', variable: '--mbzoey-parallax-y', value: heroProgress * 180},
       {element: belowBackdrop, key: 'belowBackdrop', variable: '--mbzoey-parallax-y', value: belowProgress * 180},
-      {element: heroLineField, key: 'heroLine', variable: '--mbzoey-parallax-y', value: heroProgress * 125},
       {element: belowLineField, key: 'belowLine', variable: '--mbzoey-parallax-y', value: belowProgress * 125},
     ];
     const mediaValue = heroProgress * 150;
