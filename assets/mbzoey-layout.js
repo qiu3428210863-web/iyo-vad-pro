@@ -32,7 +32,18 @@
   const background = new Image();
   const maskImage = new Image();
   background.src = 'assets/mbzoey-beard-mask.png';
-  maskImage.src = 'assets/mbzoey-beard-base.png';
+  let maskRequested = false;
+
+  const ensureMaskImage = () => {
+    if (!maskRequested) {
+      maskRequested = true;
+      maskImage.src = 'assets/mbzoey-beard-base.png';
+    }
+    if (maskImage.complete) return Promise.resolve();
+    return maskImage.decode?.() || new Promise((resolve) => {
+      maskImage.addEventListener('load', resolve, {once: true});
+    });
+  };
 
   const state = {points: [], active: false, rect: null, scale: 1, offsetX: 0, offsetY: 0};
   const source = {width: 2304, height: 1728};
@@ -87,11 +98,21 @@
   };
 
   const draw = () => {
-    if (!state.rect || !background.complete || !maskImage.complete) return;
+    if (!state.rect || !background.complete) return;
     const dpr = window.devicePixelRatio || 1;
     const baseContext = setupCanvas(baseCanvas, state.rect, dpr);
     const revealContext = setupCanvas(revealCanvas, state.rect, dpr);
     drawCover(baseContext, background, state.rect);
+
+    // Keep the clean portrait canvas transparent until the first shave stroke.
+    // This avoids a second full-size image draw during the initial page paint.
+    if (!state.points.length) {
+      revealContext.clearRect(0, 0, state.rect.width, state.rect.height);
+      return;
+    }
+
+    if (!maskImage.complete) return;
+
     drawCover(revealContext, maskImage, state.rect);
 
     const maskCanvas = document.createElement('canvas');
@@ -131,6 +152,7 @@
         const previous = state.points[state.points.length - 1];
         if (!previous || Math.hypot(point.x - previous.x, point.y - previous.y) > 18) {
           state.points.push(point);
+          ensureMaskImage().then(draw);
           draw();
         }
       }
@@ -145,6 +167,7 @@
     const point = pointToSource(event);
     if (isInBeard(point)) {
       state.points.push(point);
+      ensureMaskImage().then(draw);
       draw();
     }
     interaction.classList.add('is-shaving');
@@ -168,5 +191,5 @@
   interaction.addEventListener('pointerleave', stop);
   interaction.addEventListener('pointerenter', updatePointer, {passive: false});
   window.addEventListener('resize', resize, {passive: true});
-  Promise.all([background.decode?.() || Promise.resolve(), maskImage.decode?.() || Promise.resolve()]).then(resize);
+  (background.decode?.() || Promise.resolve()).then(resize);
 })();

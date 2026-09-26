@@ -9,6 +9,10 @@ html {
 
 body {
   overflow-x: clip;
+  /* iyo-out.css hides the document until the original runtime finishes.
+     The runtime now starts after the hero paint, so keep the page visible
+     while it boots to avoid a refresh-time black frame. */
+  visibility: visible;
 }
 
 .app,
