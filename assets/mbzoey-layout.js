@@ -9,6 +9,10 @@
   const below = document.createElement('section');
   below.className = 'mbzoey-hero-below';
   below.setAttribute('aria-label', 'Mbzoey 产品亮点');
+  const belowBackdrop = document.createElement('div');
+  belowBackdrop.className = 'mbzoey-scroll-backdrop mbzoey-scroll-backdrop--below';
+  belowBackdrop.setAttribute('aria-hidden', 'true');
+  below.appendChild(belowBackdrop);
   root.insertAdjacentElement('afterend', below);
   if (highlight) below.appendChild(highlight);
   if (cards) below.appendChild(cards);
@@ -17,6 +21,7 @@
   interaction.className = 'mbzoey-shave-interaction';
   interaction.setAttribute('aria-label', '移动剃须刀体验剃须效果');
   interaction.innerHTML = `
+    <div class="mbzoey-scroll-backdrop mbzoey-scroll-backdrop--hero" aria-hidden="true"></div>
     <canvas class="mbzoey-shave-canvas mbzoey-shave-base" aria-hidden="true"></canvas>
     <canvas class="mbzoey-shave-canvas mbzoey-shave-reveal" aria-hidden="true"></canvas>
     <img class="mbzoey-shaver-cursor" src="assets/mbzoey-shaver-cursor.png" alt="" aria-hidden="true">
@@ -28,6 +33,7 @@
   const revealCanvas = interaction.querySelector('.mbzoey-shave-reveal');
   const cursor = interaction.querySelector('.mbzoey-shaver-cursor');
   const hint = interaction.querySelector('.mbzoey-shave-hint');
+  const heroBackdrop = interaction.querySelector('.mbzoey-scroll-backdrop--hero');
   let hintPositionFrame = 0;
   let hintPositioned = false;
   let hintOverBeard = false;
@@ -292,12 +298,43 @@
     draw();
   };
 
+  let scrollFrame = 0;
+  const updateScrollBackdrops = () => {
+    scrollFrame = 0;
+    const viewportHeight = window.innerHeight || 1;
+    const targets = [
+      {element: heroBackdrop, section: hero},
+      {element: belowBackdrop, section: below},
+    ];
+    for (const {element, section} of targets) {
+      if (!element || !section) continue;
+      const rect = section.getBoundingClientRect();
+      const progress = Math.min(1, Math.max(0,
+        (viewportHeight - rect.top) / (viewportHeight + rect.height),
+      ));
+      const shift = (progress - 0.5) * 160;
+      element.style.setProperty('--mbzoey-scroll-y', `${shift.toFixed(2)}px`);
+    }
+  };
+
+  const scheduleScrollBackdrop = () => {
+    if (scrollFrame) return;
+    scrollFrame = window.requestAnimationFrame(updateScrollBackdrops);
+  };
+
   interaction.addEventListener('pointermove', updatePointer, {passive: false});
   interaction.addEventListener('pointerdown', start, {passive: false});
   interaction.addEventListener('pointerup', stop);
   interaction.addEventListener('pointercancel', stop);
   interaction.addEventListener('pointerleave', stop);
   interaction.addEventListener('pointerenter', updatePointer, {passive: false});
-  window.addEventListener('resize', resize, {passive: true});
-  (background.decode?.() || Promise.resolve()).then(resize);
+  window.addEventListener('resize', () => {
+    resize();
+    scheduleScrollBackdrop();
+  }, {passive: true});
+  window.addEventListener('scroll', scheduleScrollBackdrop, {passive: true});
+  (background.decode?.() || Promise.resolve()).then(() => {
+    resize();
+    scheduleScrollBackdrop();
+  });
 })();
