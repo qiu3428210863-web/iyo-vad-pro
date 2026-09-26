@@ -101,34 +101,48 @@ body {
 .mbzoey-shave-hint {
   position: absolute;
   z-index: 4;
-  left: 50%;
+  left: 0;
+  top: 0;
   right: auto;
-  bottom: clamp(22px, 4.5vw, 58px);
-  padding: .82em 1.45em;
+  bottom: auto;
+  display: block;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate3d(var(--mbzoey-hint-left, 0px), var(--mbzoey-hint-top, 0px), 0) translateY(-50%);
+  transition: opacity .12s ease-out, visibility 0s linear .12s, transform .22s ease-out;
+  will-change: opacity, transform;
+  pointer-events: none;
+}
+
+.mbzoey-shave-hint__inner {
+  display: block;
+  padding: .68em 1.2em;
   border-radius: 999px;
   color: #fff;
   background: #101010;
   box-shadow: 0 10px 26px rgba(0, 0, 0, .24);
-  font-size: clamp(15px, 1.45vw, 21px);
+  font-size: clamp(14px, 1.25vw, 18px);
   font-weight: 500;
   line-height: 1;
   white-space: nowrap;
-  transform: translate3d(0, -50%, 0) scaleX(1);
+  transform: scaleX(1);
   transform-origin: left center;
-  transition: transform .34s cubic-bezier(.22, .8, .25, 1);
+  transition: transform .72s cubic-bezier(.16, 1, .3, 1);
   will-change: transform;
-  pointer-events: none;
 }
 
 .mbzoey-shave-hint.is-following {
-  left: var(--mbzoey-hint-left);
-  top: var(--mbzoey-hint-top);
-  bottom: auto;
-  transform: translate3d(0, -50%, 0) scaleX(1);
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
 }
 
-.mbzoey-shave-hint.is-moving {
-  transform: translate3d(0, -50%, 0) scaleX(0);
+.mbzoey-shave-hint.is-positioning {
+  transition: none;
+}
+
+.mbzoey-shave-hint.is-moving .mbzoey-shave-hint__inner {
+  transform: scaleX(0);
 }
 
 .section.is--vad-pro .vad__text-wrap {
@@ -286,15 +300,17 @@ body {
   }
 
   .mbzoey-shave-hint {
-    bottom: 18px;
-    padding: .68em .9em;
     max-width: calc(100vw - 32px);
+  }
+
+  .mbzoey-shave-hint__inner {
+    padding: .68em .9em;
     overflow: hidden;
     text-overflow: ellipsis;
     font-size: 12px;
   }
 
-  .mbzoey-shave-hint.is-following {
+  .mbzoey-shave-hint.is-following .mbzoey-shave-hint__inner {
     max-width: min(calc(100vw - 32px), 360px);
   }
 

@@ -20,7 +20,7 @@
     <canvas class="mbzoey-shave-canvas mbzoey-shave-base" aria-hidden="true"></canvas>
     <canvas class="mbzoey-shave-canvas mbzoey-shave-reveal" aria-hidden="true"></canvas>
     <img class="mbzoey-shaver-cursor" src="assets/mbzoey-shaver-cursor.png" alt="" aria-hidden="true">
-    <span class="mbzoey-shave-hint">移动剃须刀，点击或按住剃须</span>
+    <span class="mbzoey-shave-hint"><span class="mbzoey-shave-hint__inner">移动剃须刀，点击或按住剃须</span></span>
   `;
   hero.prepend(interaction);
 
@@ -29,17 +29,29 @@
   const cursor = interaction.querySelector('.mbzoey-shaver-cursor');
   const hint = interaction.querySelector('.mbzoey-shave-hint');
   let hintIdleTimer;
+  let hintPositionFrame = 0;
+  let hintPositioned = false;
 
   const updateHintPosition = (event, rect) => {
     const cursorWidth = Math.min(132, Math.max(64, rect.width * .09));
     const gap = Math.max(24, cursorWidth * .55);
-    const width = hint.getBoundingClientRect().width;
+    // offsetWidth stays stable while the inner label is collapsed, so edge
+    // clamping never jumps when the mouse is moving quickly.
+    const width = hint.offsetWidth;
     const preferredLeft = event.clientX - rect.left + cursorWidth * .5 + gap;
     const maxLeft = Math.max(16, rect.width - width - 16);
     const left = Math.min(preferredLeft, maxLeft);
     const top = Math.min(Math.max(event.clientY - rect.top, 20), rect.height - 20);
     hint.style.setProperty('--mbzoey-hint-left', `${Math.max(16, left)}px`);
     hint.style.setProperty('--mbzoey-hint-top', `${top}px`);
+    if (!hintPositioned) {
+      hintPositioned = true;
+      hint.classList.add('is-positioning');
+      window.cancelAnimationFrame(hintPositionFrame);
+      hintPositionFrame = window.requestAnimationFrame(() => {
+        hint.classList.remove('is-positioning');
+      });
+    }
     hint.classList.add('is-following');
   };
 
@@ -48,7 +60,7 @@
     window.clearTimeout(hintIdleTimer);
     hintIdleTimer = window.setTimeout(() => {
       hint.classList.remove('is-moving');
-    }, 180);
+    }, 520);
   };
 
   // Start with the bearded portrait (图一) and reveal the clean portrait
@@ -202,6 +214,10 @@
   const stop = () => {
     state.active = false;
     interaction.classList.remove('is-shaving');
+    window.clearTimeout(hintIdleTimer);
+    window.cancelAnimationFrame(hintPositionFrame);
+    hintPositioned = false;
+    hint.classList.remove('is-moving', 'is-following', 'is-positioning');
   };
 
   const resize = () => {
