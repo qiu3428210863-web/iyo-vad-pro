@@ -27,6 +27,30 @@
   const baseCanvas = interaction.querySelector('.mbzoey-shave-base');
   const revealCanvas = interaction.querySelector('.mbzoey-shave-reveal');
   const cursor = interaction.querySelector('.mbzoey-shaver-cursor');
+  const hint = interaction.querySelector('.mbzoey-shave-hint');
+  let hintIdleTimer;
+
+  const updateHintPosition = (event, rect) => {
+    const cursorWidth = Math.min(132, Math.max(64, rect.width * .09));
+    const gap = Math.max(24, cursorWidth * .55);
+    const width = hint.getBoundingClientRect().width;
+    const preferredLeft = event.clientX - rect.left + cursorWidth * .5 + gap;
+    const maxLeft = Math.max(16, rect.width - width - 16);
+    const left = Math.min(preferredLeft, maxLeft);
+    const top = Math.min(Math.max(event.clientY - rect.top, 20), rect.height - 20);
+    hint.style.setProperty('--mbzoey-hint-left', `${Math.max(16, left)}px`);
+    hint.style.setProperty('--mbzoey-hint-top', `${top}px`);
+    hint.classList.add('is-following');
+  };
+
+  const markHintMoving = () => {
+    hint.classList.add('is-moving');
+    window.clearTimeout(hintIdleTimer);
+    hintIdleTimer = window.setTimeout(() => {
+      hint.classList.remove('is-moving');
+    }, 180);
+  };
+
   // Start with the bearded portrait (图一) and reveal the clean portrait
   // (图二) through the feathered shave mask.
   const background = new Image();
@@ -143,6 +167,8 @@
     const rect = interaction.getBoundingClientRect();
     state.rect = rect;
     imageLayout(rect);
+    updateHintPosition(event, rect);
+    markHintMoving();
     cursor.style.left = `${event.clientX - rect.left}px`;
     cursor.style.top = `${event.clientY - rect.top}px`;
     cursor.classList.add('is-visible');
