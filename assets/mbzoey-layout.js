@@ -234,6 +234,12 @@
     const maxShift = narrow ? 140 : 720;
     const shiftY = Math.min(Math.max(baseShift, minShift, clearanceShift), maxShift);
     state.offsetY = centeredOffsetY + shiftY;
+    // Keep the compositor fallback behind the canvases on the exact same
+    // crop as drawCover(). This prevents a visible seam while the canvas is
+    // decoding and when the canvases are moved by the parallax transform.
+    interaction.style.setProperty('--mbzoey-image-size', `${width}px ${height}px`);
+    interaction.style.setProperty('--mbzoey-image-left', `${state.offsetX}px`);
+    interaction.style.setProperty('--mbzoey-image-top', `${state.offsetY}px`);
   };
 
   const pointToSource = (event) => {
@@ -500,6 +506,9 @@
     }
     const mediaNext = parallax.heroMedia + (mediaValue - parallax.heroMedia) * 0.12;
     parallax.heroMedia = mediaNext;
+    // The CSS fallback background must follow the same delayed media shift as
+    // the canvases; otherwise the two image layers separate while scrolling.
+    setParallax(interaction, '--mbzoey-parallax-media-y', mediaNext);
     mediaElements.forEach((element) => {
       if (!element) return;
       setParallax(element, '--mbzoey-parallax-media-y', mediaNext);
