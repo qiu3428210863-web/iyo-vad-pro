@@ -81,6 +81,8 @@
 
   const state = {points: [], active: false, rect: null, scale: 1, offsetX: 0, offsetY: 0};
   const source = {width: 2304, height: 1728};
+  const edgeCanvas = document.createElement('canvas');
+  const edgeContext = edgeCanvas.getContext('2d');
   // Source-space polygon that follows the moustache, jaw, and chin. Keeping
   // this as a polygon prevents eye, forehead, and outer-cheek hits that a
   // rectangular region would accept.
@@ -189,15 +191,6 @@
     const maskContext = maskCanvas.getContext('2d');
     maskContext.setTransform(dpr, 0, 0, dpr, 0, 0);
     maskContext.clearRect(0, 0, state.rect.width, state.rect.height);
-    maskContext.save();
-    maskContext.beginPath();
-    beardRegion.forEach((point, index) => {
-      const viewportPoint = sourceToViewport(point);
-      if (index === 0) maskContext.moveTo(viewportPoint.x, viewportPoint.y);
-      else maskContext.lineTo(viewportPoint.x, viewportPoint.y);
-    });
-    maskContext.closePath();
-    maskContext.clip();
     for (const point of state.points) {
       const viewportPoint = sourceToViewport(point);
       const x = viewportPoint.x;
@@ -212,7 +205,31 @@
       maskContext.arc(x, y, radius, 0, Math.PI * 2);
       maskContext.fill();
     }
-    maskContext.restore();
+
+    // Multiply the brush by a softly blurred beard shape. The hit test still
+    // uses the sharp polygon, while the rendered edge fades into the portrait.
+    if (edgeCanvas.width !== maskCanvas.width || edgeCanvas.height !== maskCanvas.height) {
+      edgeCanvas.width = maskCanvas.width;
+      edgeCanvas.height = maskCanvas.height;
+    }
+    edgeContext.setTransform(dpr, 0, 0, dpr, 0, 0);
+    edgeContext.filter = 'none';
+    edgeContext.clearRect(0, 0, state.rect.width, state.rect.height);
+    const feather = Math.max(6, Math.min(18, 18 * state.scale));
+    edgeContext.filter = `blur(${feather / dpr}px)`;
+    edgeContext.fillStyle = '#fff';
+    edgeContext.beginPath();
+    beardRegion.forEach((point, index) => {
+      const viewportPoint = sourceToViewport(point);
+      if (index === 0) edgeContext.moveTo(viewportPoint.x, viewportPoint.y);
+      else edgeContext.lineTo(viewportPoint.x, viewportPoint.y);
+    });
+    edgeContext.closePath();
+    edgeContext.fill();
+    edgeContext.filter = 'none';
+    maskContext.globalCompositeOperation = 'destination-in';
+    maskContext.drawImage(edgeCanvas, 0, 0, state.rect.width, state.rect.height);
+    maskContext.globalCompositeOperation = 'source-over';
     revealContext.globalCompositeOperation = 'destination-in';
     revealContext.drawImage(maskCanvas, 0, 0, state.rect.width, state.rect.height);
     revealContext.globalCompositeOperation = 'source-over';
