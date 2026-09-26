@@ -36,7 +36,7 @@
     <span class="mbzoey-layer-word" aria-hidden="true">MBZOEY</span>
     <canvas class="mbzoey-shave-canvas mbzoey-person-layer" aria-hidden="true"></canvas>
     <canvas class="mbzoey-shave-canvas mbzoey-shave-reveal" aria-hidden="true"></canvas>
-    <img class="mbzoey-shaver-cursor" src="assets/mbzoey-shaver-cursor.png" alt="" aria-hidden="true">
+    <img class="mbzoey-shaver-cursor" src="assets/mbzoey-shaver-cursor.webp" alt="" aria-hidden="true">
     <span class="mbzoey-shave-hint"><span class="mbzoey-shave-hint__inner">移动剃须刀，点击或按住剃须</span></span>
   `;
   hero.prepend(interaction);
@@ -45,6 +45,8 @@
   const personCanvas = interaction.querySelector('.mbzoey-person-layer');
   const revealCanvas = interaction.querySelector('.mbzoey-shave-reveal');
   const cursor = interaction.querySelector('.mbzoey-shaver-cursor');
+  cursor.decoding = 'async';
+  cursor.fetchPriority = 'high';
   const hint = interaction.querySelector('.mbzoey-shave-hint');
   const heroBackdrop = interaction.querySelector('.mbzoey-scroll-backdrop--hero');
   const heroLineField = root.querySelector('.vad__visual-wrap-new');
@@ -118,14 +120,16 @@
   // Start with the bearded portrait (图一) and reveal the clean portrait
   // (图二) through the feathered shave mask.
   const background = new Image();
+  background.decoding = 'async';
+  background.fetchPriority = 'high';
   const maskImage = new Image();
-  background.src = 'assets/mbzoey-beard-mask.png';
+  background.src = 'assets/mbzoey-beard-mask.webp';
   let maskRequested = false;
 
   const ensureMaskImage = () => {
     if (!maskRequested) {
       maskRequested = true;
-      maskImage.src = 'assets/mbzoey-beard-base.png';
+      maskImage.src = 'assets/mbzoey-beard-base.webp';
     }
     if (maskImage.complete) return Promise.resolve();
     return maskImage.decode?.() || new Promise((resolve) => {
@@ -184,13 +188,30 @@
   ];
 
   const setupCanvas = (canvas, rect, dpr) => {
-    canvas.width = Math.max(1, Math.round(rect.width * dpr));
-    canvas.height = Math.max(1, Math.round(rect.height * dpr));
-    canvas.style.width = `${rect.width}px`;
-    canvas.style.height = `${rect.height}px`;
+    const pixelWidth = Math.max(1, Math.round(rect.width * dpr));
+    const pixelHeight = Math.max(1, Math.round(rect.height * dpr));
+    // Changing canvas.width/height reallocates the backing store. Only do it
+    // when the viewport or device pixel ratio actually changes; pointer moves
+    // otherwise reuse the existing buffers and avoid input jank.
+    if (canvas.width !== pixelWidth) canvas.width = pixelWidth;
+    if (canvas.height !== pixelHeight) canvas.height = pixelHeight;
+    const cssWidth = `${rect.width}px`;
+    const cssHeight = `${rect.height}px`;
+    if (canvas.style.width !== cssWidth) canvas.style.width = cssWidth;
+    if (canvas.style.height !== cssHeight) canvas.style.height = cssHeight;
     const context = canvas.getContext('2d');
     context.setTransform(dpr, 0, 0, dpr, 0, 0);
     return context;
+  };
+
+  let layoutWidth = 0;
+  let layoutHeight = 0;
+  const ensureImageLayout = (rect, force = false) => {
+    if (force || rect.width !== layoutWidth || rect.height !== layoutHeight) {
+      imageLayout(rect);
+      layoutWidth = rect.width;
+      layoutHeight = rect.height;
+    }
   };
 
   const imageLayout = (rect) => {
@@ -277,7 +298,7 @@
   };
 
   const draw = () => {
-    if (!state.rect || !background.complete) return;
+    if (!state.rect || !background.complete || !background.naturalWidth) return;
     const dpr = window.devicePixelRatio || 1;
     const baseContext = setupCanvas(baseCanvas, state.rect, dpr);
     const personContext = setupCanvas(personCanvas, state.rect, dpr);
@@ -347,10 +368,19 @@
     revealContext.globalCompositeOperation = 'source-over';
   };
 
-  const updatePointer = (event) => {
+  let drawFrame = 0;
+  const requestDraw = () => {
+    if (drawFrame) return;
+    drawFrame = window.requestAnimationFrame(() => {
+      drawFrame = 0;
+      draw();
+    });
+  };
+
+  const applyPointer = (event) => {
     const rect = interaction.getBoundingClientRect();
     state.rect = rect;
-    imageLayout(rect);
+    ensureImageLayout(rect);
     updateHintPosition(event, rect);
     cursor.style.left = `${event.clientX - rect.left}px`;
     cursor.style.top = `${event.clientY - rect.top}px`;
@@ -358,16 +388,38 @@
     const point = pointToSource(event);
     const insideBeard = isInBeard(point);
     updateHintRegion(insideBeard);
-    if (state.active) {
-      if (insideBeard) {
-        const previous = state.points[state.points.length - 1];
-        if (!previous || Math.hypot(point.x - previous.x, point.y - previous.y) > 18) {
-          state.points.push(point);
-          ensureMaskImage().then(draw);
-          draw();
-        }
+    if (state.active && insideBeard) {
+      const previous = state.points[state.points.length - 1];
+      if (!previous || Math.hypot(point.x - previous.x, point.y - previous.y) > 18) {
+        state.points.push(point);
+        ensureMaskImage().then(requestDraw);
+        requestDraw();
       }
     }
+  };
+
+  let pointerFrame = 0;
+  let pendingPointer = null;
+  const updatePointer = (event) => {
+    pendingPointer = {clientX: event.clientX, clientY: event.clientY};
+    // Enter/down need an immediate response. Pointer moves are coalesced to
+    // one update per frame so rapid input cannot trigger repeated layout reads
+    // and canvas work in the same frame.
+    if (event.type === 'pointerenter' || event.type === 'pointerdown') {
+      if (pointerFrame) window.cancelAnimationFrame(pointerFrame);
+      pointerFrame = 0;
+      const next = pendingPointer;
+      pendingPointer = null;
+      applyPointer(next);
+      return;
+    }
+    if (pointerFrame) return;
+    pointerFrame = window.requestAnimationFrame(() => {
+      pointerFrame = 0;
+      const next = pendingPointer;
+      pendingPointer = null;
+      if (next) applyPointer(next);
+    });
   };
 
   const start = (event) => {
@@ -378,14 +430,17 @@
     const point = pointToSource(event);
     if (isInBeard(point)) {
       state.points.push(point);
-      ensureMaskImage().then(draw);
-      draw();
+      ensureMaskImage().then(requestDraw);
+      requestDraw();
     }
     interaction.classList.add('is-shaving');
   };
 
   const stop = () => {
     state.active = false;
+    if (pointerFrame) window.cancelAnimationFrame(pointerFrame);
+    pointerFrame = 0;
+    pendingPointer = null;
     interaction.classList.remove('is-shaving');
     window.cancelAnimationFrame(hintPositionFrame);
     hintPositioned = false;
@@ -394,7 +449,7 @@
 
   const resize = () => {
     state.rect = interaction.getBoundingClientRect();
-    imageLayout(state.rect);
+    ensureImageLayout(state.rect, true);
     draw();
   };
 
@@ -469,8 +524,15 @@
     scheduleScrollBackdrop();
   }, {passive: true});
   window.addEventListener('scroll', scheduleScrollBackdrop, {passive: true});
-  (background.decode?.() || Promise.resolve()).then(() => {
+  let backgroundInitialized = false;
+  const initializeBackground = () => {
+    if (backgroundInitialized) return;
+    backgroundInitialized = true;
     resize();
     scheduleScrollBackdrop();
-  });
+  };
+  background.addEventListener('load', initializeBackground, {once: true});
+  background.addEventListener('error', () => interaction.classList.add('is-image-error'), {once: true});
+  if (background.complete && background.naturalWidth) initializeBackground();
+  else if (background.decode) background.decode().then(initializeBackground).catch(() => {});
 })();

@@ -83,7 +83,14 @@ body {
   z-index: 0;
   overflow: hidden;
   touch-action: none;
-  background: #e9e9e9;
+  /* Paint the portrait through the compositor while the canvas is decoding.
+     The canvas takes over with the exact crop once it is ready, so a cold
+     reload never exposes a flat white frame. */
+  background-color: #e9e9e9;
+  background-image: url('mbzoey-beard-mask.webp');
+  background-position: center 52%;
+  background-repeat: no-repeat;
+  background-size: cover;
   cursor: none;
 }
 
