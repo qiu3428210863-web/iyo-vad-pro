@@ -119,16 +119,22 @@
   const imageLayout = (rect) => {
     const coverScale = Math.max(rect.width / source.width, rect.height / source.height);
     const narrow = rect.width < 640;
-    const zoom = narrow ? 1.08 : 1.12;
-    const shiftY = Math.min(
-      Math.max(rect.height * (narrow ? 0.07 : 0.14), narrow ? 28 : 56),
-      narrow ? 80 : 150,
-    );
+    const zoom = narrow ? 1.12 : 1.2;
     state.scale = coverScale * zoom;
     const width = source.width * state.scale;
     const height = source.height * state.scale;
     state.offsetX = (rect.width - width) / 2;
-    state.offsetY = (rect.height - height) / 2 + shiftY;
+    const centeredOffsetY = (rect.height - height) / 2;
+    // Keep the top of the source hair below the unchanged navigation bar,
+    // even on very wide screens where cover-cropping would otherwise lift it.
+    const hairTopSourceY = narrow ? 155 : 180;
+    const navClearance = narrow ? 96 : 118;
+    const clearanceShift = navClearance - hairTopSourceY * state.scale - centeredOffsetY;
+    const baseShift = rect.height * (narrow ? 0.1 : 0.14);
+    const minShift = narrow ? 48 : 80;
+    const maxShift = narrow ? 120 : 520;
+    const shiftY = Math.min(Math.max(baseShift, minShift, clearanceShift), maxShift);
+    state.offsetY = centeredOffsetY + shiftY;
   };
 
   const pointToSource = (event) => {
