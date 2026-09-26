@@ -119,7 +119,7 @@
   const imageLayout = (rect) => {
     const coverScale = Math.max(rect.width / source.width, rect.height / source.height);
     const narrow = rect.width < 640;
-    const zoom = narrow ? 1.12 : 1.2;
+    const zoom = narrow ? 1.2 : 1.3;
     state.scale = coverScale * zoom;
     const width = source.width * state.scale;
     const height = source.height * state.scale;
@@ -132,7 +132,7 @@
     const clearanceShift = navClearance - hairTopSourceY * state.scale - centeredOffsetY;
     const baseShift = rect.height * (narrow ? 0.1 : 0.14);
     const minShift = narrow ? 48 : 80;
-    const maxShift = narrow ? 120 : 520;
+    const maxShift = narrow ? 140 : 720;
     const shiftY = Math.min(Math.max(baseShift, minShift, clearanceShift), maxShift);
     state.offsetY = centeredOffsetY + shiftY;
   };
