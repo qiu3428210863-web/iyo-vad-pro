@@ -23,6 +23,8 @@
   interaction.innerHTML = `
     <div class="mbzoey-scroll-backdrop mbzoey-scroll-backdrop--hero" aria-hidden="true"></div>
     <canvas class="mbzoey-shave-canvas mbzoey-shave-base" aria-hidden="true"></canvas>
+    <span class="mbzoey-layer-word" aria-hidden="true">MBZOEY</span>
+    <canvas class="mbzoey-shave-canvas mbzoey-person-layer" aria-hidden="true"></canvas>
     <canvas class="mbzoey-shave-canvas mbzoey-shave-reveal" aria-hidden="true"></canvas>
     <img class="mbzoey-shaver-cursor" src="assets/mbzoey-shaver-cursor.png" alt="" aria-hidden="true">
     <span class="mbzoey-shave-hint"><span class="mbzoey-shave-hint__inner">移动剃须刀，点击或按住剃须</span></span>
@@ -30,6 +32,7 @@
   hero.prepend(interaction);
 
   const baseCanvas = interaction.querySelector('.mbzoey-shave-base');
+  const personCanvas = interaction.querySelector('.mbzoey-person-layer');
   const revealCanvas = interaction.querySelector('.mbzoey-shave-reveal');
   const cursor = interaction.querySelector('.mbzoey-shaver-cursor');
   const hint = interaction.querySelector('.mbzoey-shave-hint');
@@ -89,6 +92,8 @@
   const source = {width: 2304, height: 1728};
   const edgeCanvas = document.createElement('canvas');
   const edgeContext = edgeCanvas.getContext('2d');
+  const personMaskCanvas = document.createElement('canvas');
+  const personMaskContext = personMaskCanvas.getContext('2d');
   // Source-space polygon that follows the moustache, jaw, and chin. Keeping
   // this as a polygon prevents eye, forehead, and outer-cheek hits that a
   // rectangular region would accept.
@@ -110,6 +115,27 @@
     {x: 1010, y: 750},
     {x: 990, y: 680},
     {x: 995, y: 620},
+  ];
+  // A broad source-space silhouette keeps the center portrait above the word
+  // layer, so the word sits visually between the person and the background.
+  const personRegion = [
+    {x: 940, y: 170},
+    {x: 1210, y: 160},
+    {x: 1340, y: 220},
+    {x: 1400, y: 360},
+    {x: 1390, y: 560},
+    {x: 1330, y: 730},
+    {x: 1480, y: 805},
+    {x: 1750, y: 930},
+    {x: 1900, y: 1200},
+    {x: 1900, y: 1728},
+    {x: 400, y: 1728},
+    {x: 430, y: 1250},
+    {x: 560, y: 1000},
+    {x: 800, y: 820},
+    {x: 900, y: 730},
+    {x: 850, y: 560},
+    {x: 850, y: 350},
   ];
 
   const setupCanvas = (canvas, rect, dpr) => {
@@ -134,7 +160,8 @@
     // Keep the top of the source hair below the unchanged navigation bar,
     // even on very wide screens where cover-cropping would otherwise lift it.
     const hairTopSourceY = narrow ? 155 : 180;
-    const navClearance = narrow ? 96 : 118;
+    const navBottom = document.querySelector('.centered-nav')?.getBoundingClientRect().bottom;
+    const navClearance = (Number.isFinite(navBottom) ? navBottom : (narrow ? 86 : 110)) + 8;
     const clearanceShift = navClearance - hairTopSourceY * state.scale - centeredOffsetY;
     const baseShift = rect.height * (narrow ? 0.1 : 0.14);
     const minShift = narrow ? 48 : 80;
@@ -179,12 +206,40 @@
     );
   };
 
+  const drawPersonLayer = (context, rect, dpr) => {
+    if (personMaskCanvas.width !== Math.round(rect.width * dpr) ||
+        personMaskCanvas.height !== Math.round(rect.height * dpr)) {
+      personMaskCanvas.width = Math.max(1, Math.round(rect.width * dpr));
+      personMaskCanvas.height = Math.max(1, Math.round(rect.height * dpr));
+    }
+    personMaskContext.setTransform(dpr, 0, 0, dpr, 0, 0);
+    personMaskContext.filter = 'none';
+    personMaskContext.clearRect(0, 0, rect.width, rect.height);
+    personMaskContext.filter = `blur(${Math.max(2, 4 * state.scale) / dpr}px)`;
+    personMaskContext.fillStyle = '#fff';
+    personMaskContext.beginPath();
+    personRegion.forEach((point, index) => {
+      const viewportPoint = sourceToViewport(point);
+      if (index === 0) personMaskContext.moveTo(viewportPoint.x, viewportPoint.y);
+      else personMaskContext.lineTo(viewportPoint.x, viewportPoint.y);
+    });
+    personMaskContext.closePath();
+    personMaskContext.fill();
+    personMaskContext.filter = 'none';
+    context.globalCompositeOperation = 'destination-in';
+    context.drawImage(personMaskCanvas, 0, 0, rect.width, rect.height);
+    context.globalCompositeOperation = 'source-over';
+  };
+
   const draw = () => {
     if (!state.rect || !background.complete) return;
     const dpr = window.devicePixelRatio || 1;
     const baseContext = setupCanvas(baseCanvas, state.rect, dpr);
+    const personContext = setupCanvas(personCanvas, state.rect, dpr);
     const revealContext = setupCanvas(revealCanvas, state.rect, dpr);
     drawCover(baseContext, background, state.rect);
+    drawCover(personContext, background, state.rect);
+    drawPersonLayer(personContext, state.rect, dpr);
 
     // Keep the clean portrait canvas transparent until the first shave stroke.
     // This avoids a second full-size image draw during the initial page paint.

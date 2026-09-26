@@ -69,7 +69,7 @@ body {
 .mbzoey-scroll-backdrop {
   position: absolute;
   inset: -18% -8%;
-  z-index: 2;
+  z-index: 1;
   pointer-events: none;
   opacity: .13;
   transform: translate3d(0, var(--mbzoey-scroll-y, 0px), 0);
@@ -100,12 +100,34 @@ body {
 }
 
 .mbzoey-shave-reveal {
-  z-index: 1;
+  z-index: 4;
+}
+
+.mbzoey-person-layer {
+  z-index: 3;
+}
+
+.mbzoey-layer-word {
+  position: absolute;
+  z-index: 2;
+  top: 44%;
+  left: 50%;
+  display: block;
+  color: #101010;
+  font-family: Arial Black, Arial, sans-serif;
+  font-size: clamp(64px, 13vw, 220px);
+  font-weight: 900;
+  letter-spacing: -.07em;
+  line-height: .82;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  transform: translate(-50%, -50%);
 }
 
 .mbzoey-shaver-cursor {
   position: absolute;
-  z-index: 2;
+  z-index: 5;
   width: clamp(64px, 9vw, 132px);
   height: auto;
   pointer-events: none;
@@ -126,7 +148,7 @@ body {
 
 .mbzoey-shave-hint {
   position: absolute;
-  z-index: 4;
+  z-index: 6;
   left: 0;
   top: 0;
   right: auto;
