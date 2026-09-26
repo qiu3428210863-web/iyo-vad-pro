@@ -97,17 +97,31 @@ body {
 .mbzoey-shave-hint {
   position: absolute;
   z-index: 3;
-  right: clamp(16px, 4vw, 64px);
-  bottom: clamp(18px, 4vw, 46px);
-  padding: .7em 1em;
-  border: 1px solid rgba(0, 0, 0, .16);
+  left: 50%;
+  right: auto;
+  bottom: clamp(22px, 4.5vw, 58px);
+  padding: .82em 1.45em;
   border-radius: 999px;
-  color: rgba(0, 0, 0, .7);
-  background: rgba(255, 255, 255, .5);
-  backdrop-filter: blur(12px);
-  font-size: clamp(12px, 1.1vw, 16px);
+  color: #fff;
+  background: #101010;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, .24);
+  font-size: clamp(15px, 1.45vw, 21px);
+  font-weight: 500;
   line-height: 1;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  animation: mbzoey-hint-breathe 5.2s ease-in-out infinite;
+  will-change: opacity, transform;
   pointer-events: none;
+}
+
+@keyframes mbzoey-hint-breathe {
+  0%, 100% {
+    opacity: .46;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .section.is--vad-pro .vad__text-wrap {
@@ -265,8 +279,10 @@ body {
   }
 
   .mbzoey-shave-hint {
-    right: 16px;
     bottom: 18px;
+    max-width: calc(100vw - 32px);
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .centered-nav {
