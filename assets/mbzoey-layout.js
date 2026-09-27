@@ -22,7 +22,8 @@
   interaction.setAttribute('aria-label', '移动剃须刀体验剃须效果');
   interaction.innerHTML = `
     <canvas class="mbzoey-shave-canvas mbzoey-shave-base" aria-hidden="true"></canvas>
-    <span class="mbzoey-layer-word" aria-hidden="true">MBZOEY</span>
+    <span class="mbzoey-layer-word mbzoey-layer-word--left" aria-hidden="true">MBZ</span>
+    <span class="mbzoey-layer-word mbzoey-layer-word--right" aria-hidden="true">OEY</span>
     <canvas class="mbzoey-shave-canvas mbzoey-person-layer" aria-hidden="true"></canvas>
     <canvas class="mbzoey-shave-canvas mbzoey-shave-reveal" aria-hidden="true"></canvas>
     <img class="mbzoey-shaver-cursor" src="assets/mbzoey-shaver-cursor.webp" alt="" aria-hidden="true">

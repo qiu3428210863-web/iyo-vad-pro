@@ -115,18 +115,30 @@ body {
   position: absolute;
   z-index: 2;
   top: 44%;
-  left: 50%;
   display: block;
-  color: #101010;
+  color: #fff;
   font-family: Arial Black, Arial, sans-serif;
-  font-size: clamp(64px, 13vw, 220px);
+  font-size: clamp(64px, 12vw, 220px);
   font-weight: 900;
-  letter-spacing: -.07em;
+  letter-spacing: .1em;
   line-height: .82;
   white-space: nowrap;
   pointer-events: none;
   user-select: none;
-  transform: translate(-50%, -50%);
+  text-shadow: 0 4px 22px rgba(0, 0, 0, .28);
+  transform: translateY(-50%);
+}
+
+.mbzoey-layer-word--left {
+  left: 4%;
+  width: 32%;
+  text-align: right;
+}
+
+.mbzoey-layer-word--right {
+  right: 4%;
+  width: 32%;
+  text-align: left;
 }
 
 .mbzoey-shaver-cursor {
@@ -219,6 +231,15 @@ body {
 
 .section.is--vad-pro .centered-nav {
   z-index: 6;
+}
+
+/* The hero canvas is animated under the nav. A backdrop blur samples each canvas
+   frame and produces transient vertical bands while the pointer moves. Keep the
+   rounded nav treatment, but use a stable fill so the navigation stays clean. */
+.centered-nav__bg {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  background-color: rgba(56, 56, 56, .9) !important;
 }
 
 /* The delayed nav.js entrance is disabled; this synchronous entrance avoids
@@ -400,6 +421,22 @@ body {
 
   .mbzoey-shave-hint.is-following .mbzoey-shave-hint__inner {
     max-width: min(calc(100vw - 32px), 360px);
+  }
+
+  .mbzoey-layer-word {
+    top: 46%;
+    font-size: clamp(44px, 12vw, 104px);
+    letter-spacing: .06em;
+  }
+
+  .mbzoey-layer-word--left {
+    left: 3%;
+    width: 42%;
+  }
+
+  .mbzoey-layer-word--right {
+    right: 3%;
+    width: 42%;
   }
 
   .centered-nav {
