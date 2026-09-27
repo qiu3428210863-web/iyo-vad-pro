@@ -100,27 +100,20 @@
   const edgeContext = edgeCanvas.getContext('2d');
   const personMaskCanvas = document.createElement('canvas');
   const personMaskContext = personMaskCanvas.getContext('2d');
-  // Source-space polygon that follows the moustache, jaw, and chin. Keeping
-  // this as a polygon prevents eye, forehead, and outer-cheek hits that a
-  // rectangular region would accept.
+  // Source-space polygon mapped from the user's red beard outline and inset
+  // slightly. Keeping this as a small polygon prevents eye, forehead, nose,
+  // outer-cheek, and neck hits that a broad rectangle would accept.
   const beardRegion = [
-    {x: 1000, y: 565},
-    {x: 1040, y: 540},
-    {x: 1100, y: 540},
-    {x: 1150, y: 552},
-    {x: 1200, y: 540},
-    {x: 1280, y: 545},
-    {x: 1330, y: 575},
-    {x: 1340, y: 640},
-    {x: 1330, y: 710},
-    {x: 1300, y: 780},
-    {x: 1240, y: 835},
-    {x: 1170, y: 865},
-    {x: 1100, y: 845},
-    {x: 1045, y: 805},
-    {x: 1010, y: 750},
-    {x: 990, y: 680},
-    {x: 995, y: 620},
+    {x: 1210, y: 558},
+    {x: 1128, y: 566},
+    {x: 1066, y: 632},
+    {x: 1063, y: 707},
+    {x: 1116, y: 806},
+    {x: 1196, y: 813},
+    {x: 1281, y: 768},
+    {x: 1306, y: 713},
+    {x: 1302, y: 657},
+    {x: 1278, y: 590},
   ];
   const setupCanvas = (canvas, rect, dpr) => {
     const pixelWidth = Math.max(1, Math.round(rect.width * dpr));
@@ -271,7 +264,7 @@
       const viewportPoint = sourceToViewport(point);
       const x = viewportPoint.x;
       const y = viewportPoint.y;
-      const radius = 112 * state.scale;
+      const radius = 88 * state.scale;
       const gradient = maskContext.createRadialGradient(x, y, radius * 0.18, x, y, radius);
       gradient.addColorStop(0, 'rgba(255,255,255,1)');
       gradient.addColorStop(0.68, 'rgba(255,255,255,.88)');
