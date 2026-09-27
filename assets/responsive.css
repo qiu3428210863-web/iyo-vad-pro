@@ -3,6 +3,14 @@
   --page-gutter: clamp(16px, 4vw, 64px);
 }
 
+@font-face {
+  font-family: "AaXingGui";
+  src: url("AaXingGui-2.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
 html {
   scroll-padding-top: 100px;
 }
@@ -130,11 +138,11 @@ body {
   top: 44%;
   display: block;
   color: #fff;
-  font-family: Arial Black, Arial, sans-serif;
+  font-family: "AaXingGui", Arial, sans-serif;
   font-size: clamp(64px, 12vw, 220px);
-  font-weight: 900;
-  letter-spacing: .1em;
-  line-height: .82;
+  font-weight: 400;
+  letter-spacing: .06em;
+  line-height: .86;
   white-space: nowrap;
   pointer-events: none;
   user-select: none;
@@ -143,14 +151,14 @@ body {
 }
 
 .mbzoey-layer-word--left {
-  left: 4%;
-  width: 32%;
+  left: 2.5%;
+  width: 39%;
   text-align: right;
 }
 
 .mbzoey-layer-word--right {
-  right: 4%;
-  width: 32%;
+  right: 2.5%;
+  width: 39%;
   text-align: left;
 }
 
