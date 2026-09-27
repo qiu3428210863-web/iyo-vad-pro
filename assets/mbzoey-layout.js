@@ -80,7 +80,7 @@
   personRegionImage.decoding = 'async';
   personRegionImage.fetchPriority = 'high';
   background.src = 'assets/mbzoey-beard-mask.webp';
-  personRegionImage.src = 'assets/mbzoey-person-region-mask.png';
+  personRegionImage.src = 'assets/mbzoey-person-region-mask-v2.png';
   let maskRequested = false;
 
   const ensureMaskImage = () => {

@@ -139,13 +139,15 @@ body {
   display: block;
   color: #fff;
   font-family: "AaXingGui", Arial, sans-serif;
-  font-size: clamp(64px, 12vw, 220px);
+  font-size: clamp(76px, 14vw, 260px);
   font-weight: 400;
   letter-spacing: .06em;
   line-height: .86;
   white-space: nowrap;
   pointer-events: none;
   user-select: none;
+  -webkit-text-stroke: clamp(1px, .16vw, 3px) currentColor;
+  paint-order: stroke fill;
   text-shadow: 0 4px 22px rgba(0, 0, 0, .28);
   transform: translateY(-50%);
 }
