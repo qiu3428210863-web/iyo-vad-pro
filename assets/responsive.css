@@ -240,25 +240,27 @@ body {
 
 .quantity-stepper {
   display: flex;
-  flex: 0 0 2rem;
+  flex: 0 0 2.25rem;
   align-items: center;
   justify-content: center;
-  width: 2rem;
+  width: 2.25rem;
   height: 2rem;
-  color: #101010;
-  background: #f7f7f7;
-  border: 2px solid #fff;
-  border-radius: .35rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, .18);
+  color: #fff;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  text-align: center;
 }
 
 .quantity-stepper__value {
   display: block;
   min-width: 1ch;
-  color: inherit;
-  font-size: .9rem;
-  font-weight: 600;
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 500;
   line-height: 1;
+  text-align: center;
 }
 
 .section.is--vad-pro .vad__text-wrap {
