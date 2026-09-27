@@ -582,3 +582,25 @@ body {
   position: relative;
   left: clamp(5px, 0.75vw, 11px);
 }
+
+/* Local cart state fallback: keeps the static template in sync with its controls when the
+   hosted Shopyflow runtime is unavailable. The navigation panel and its original motion stay intact. */
+[sf-cart-item][aria-hidden="true"],
+[sf-cart-empty][aria-hidden="true"] {
+  display: none !important;
+}
+
+[sf-show-image] {
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+[sf-change-quantity-inc],
+[sf-change-quantity-dec],
+[sf-cart-item-remove],
+[sf-checkout] {
+  cursor: pointer;
+  touch-action: manipulation;
+}
