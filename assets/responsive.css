@@ -685,9 +685,14 @@ body {
   padding-bottom: 4vw;
 }
 
+.features__wrap.is--vad2 .product__subheading,
+.features__wrap.is--vad2 .product__title,
+.features__wrap.is--vad2 .product__title h2,
 .features__wrap.is--vad2 .product__paragraph,
+.features__wrap.is--vad2 .product__paragraph .paragraph,
 .features__wrap.is--vad2 .product__description-wrap {
   color: #fff;
+  opacity: 1;
 }
 
 /* Keep the three feature headlines on one desktop line. Their text column was
