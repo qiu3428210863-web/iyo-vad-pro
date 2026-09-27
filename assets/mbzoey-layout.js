@@ -19,7 +19,7 @@
 
   const interaction = document.createElement('div');
   interaction.className = 'mbzoey-shave-interaction';
-  interaction.setAttribute('aria-label', '移动剃须刀体验剃须效果');
+  interaction.setAttribute('aria-label', '点击人脸即可剃须');
   interaction.innerHTML = `
     <canvas class="mbzoey-shave-canvas mbzoey-shave-base" aria-hidden="true"></canvas>
     <span class="mbzoey-layer-word mbzoey-layer-word--left" aria-hidden="true">MBZ</span>
@@ -27,7 +27,7 @@
     <canvas class="mbzoey-shave-canvas mbzoey-person-layer" aria-hidden="true"></canvas>
     <canvas class="mbzoey-shave-canvas mbzoey-shave-reveal" aria-hidden="true"></canvas>
     <img class="mbzoey-shaver-cursor" src="assets/mbzoey-shaver-cursor.webp" alt="" aria-hidden="true">
-    <span class="mbzoey-shave-hint"><span class="mbzoey-shave-hint__inner">移动剃须刀，点击或按住剃须</span></span>
+    <span class="mbzoey-shave-hint"><span class="mbzoey-shave-hint__inner">点击人脸即可剃须</span></span>
   `;
   hero.prepend(interaction);
 
