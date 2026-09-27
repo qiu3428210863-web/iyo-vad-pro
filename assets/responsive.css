@@ -64,6 +64,19 @@ body {
   cursor: none;
 }
 
+/* The shaver is scoped to the first screen. Hide the last pointer position
+   while that section is outside the viewport instead of letting it appear to
+   stick to the next page during scroll. */
+.mbzoey-shave-interaction.is-out-of-view {
+  pointer-events: none;
+}
+
+.mbzoey-shave-interaction.is-out-of-view .mbzoey-shaver-cursor,
+.mbzoey-shave-interaction.is-out-of-view .mbzoey-shave-hint {
+  opacity: 0 !important;
+  visibility: hidden;
+}
+
 /* Scroll-linked parallax layers. The content stays in place while the
    background media follows the scroll position with a delayed, eased drift. */
 .mbzoey-scroll-backdrop {

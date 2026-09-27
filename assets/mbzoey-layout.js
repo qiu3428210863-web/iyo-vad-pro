@@ -95,6 +95,7 @@
   };
 
   const state = {points: [], active: false, rect: null, scale: 1, offsetX: 0, offsetY: 0};
+  let heroInView = true;
   const source = {width: 2304, height: 1728};
   const edgeCanvas = document.createElement('canvas');
   const edgeContext = edgeCanvas.getContext('2d');
@@ -193,6 +194,28 @@
       if (crosses) inside = !inside;
     }
     return inside;
+  };
+
+  // The shaver belongs to the first screen only. A stationary pointer does not
+  // emit pointerleave when the document scrolls underneath it, so visibility
+  // must also follow the hero's viewport intersection instead of relying on
+  // pointer events alone.
+  const hideCursorOutsideHero = () => {
+    state.active = false;
+    interaction.classList.remove('is-shaving');
+    interaction.classList.add('is-out-of-view');
+    cursor.classList.remove('is-visible');
+    hint.classList.remove('is-following', 'is-positioning', 'is-over-beard');
+    if (pointerFrame) window.cancelAnimationFrame(pointerFrame);
+    pointerFrame = 0;
+    pendingPointer = null;
+  };
+
+  const setHeroVisibility = (visible) => {
+    if (heroInView === visible) return;
+    heroInView = visible;
+    if (visible) interaction.classList.remove('is-out-of-view');
+    else hideCursorOutsideHero();
   };
 
   const drawCover = (context, image, rect) => {
@@ -314,6 +337,7 @@
   };
 
   const applyPointer = (event) => {
+    if (!heroInView) return;
     const rect = interaction.getBoundingClientRect();
     state.rect = rect;
     ensureImageLayout(rect);
@@ -359,6 +383,7 @@
   };
 
   const start = (event) => {
+    if (!heroInView) return;
     event.preventDefault();
     state.active = true;
     interaction.setPointerCapture?.(event.pointerId);
@@ -406,6 +431,7 @@
     const viewportHeight = window.innerHeight || 1;
     const heroRect = hero.getBoundingClientRect();
     const belowRect = below.getBoundingClientRect();
+    setHeroVisibility(heroRect.bottom > 0 && heroRect.top < viewportHeight);
     const heroProgress = clamp01(-heroRect.top / Math.max(1, heroRect.height));
     // Keep the next page's background moving while it enters the viewport,
     // so it arrives later than the page surface and creates the handoff seen
