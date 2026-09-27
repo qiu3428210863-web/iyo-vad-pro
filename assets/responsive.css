@@ -224,9 +224,13 @@ body {
   transition: none;
 }
 
-/* Cart quantity control: keep the numeric input as a synchronized form value,
-   while the visible middle control uses two clear up/down buttons. */
+/* Cart quantity control: the outer controls change the quantity and the
+   middle display shows the current numeric value. */
 .cart-item_quantity-block {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
   gap: .35rem;
 }
 
@@ -236,51 +240,25 @@ body {
 
 .quantity-stepper {
   display: flex;
-  flex-direction: column;
+  flex: 0 0 2rem;
+  align-items: center;
+  justify-content: center;
   width: 2rem;
   height: 2rem;
-  overflow: hidden;
-  color: #6d6d6d;
+  color: #101010;
   background: #f7f7f7;
   border: 2px solid #fff;
   border-radius: .35rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, .18);
 }
 
-.quantity-stepper__button {
-  display: flex;
-  flex: 1 1 50%;
-  align-items: center;
-  justify-content: center;
-  min-height: 0;
-  padding: 0;
+.quantity-stepper__value {
+  display: block;
+  min-width: 1ch;
   color: inherit;
-  cursor: pointer;
-  background: transparent;
-  border: 0;
-  font-size: .58rem;
+  font-size: .9rem;
+  font-weight: 600;
   line-height: 1;
-  transition: color .16s ease, background-color .16s ease;
-}
-
-.quantity-stepper__button + .quantity-stepper__button {
-  border-top: 1px solid rgba(80, 80, 80, .35);
-}
-
-.quantity-stepper__button:hover,
-.quantity-stepper__button:focus-visible {
-  color: #101010;
-  background: #fff;
-  outline: none;
-}
-
-.quantity-stepper__button:active {
-  background: #dedede;
-}
-
-.quantity-stepper__button:disabled {
-  cursor: default;
-  opacity: .35;
 }
 
 .section.is--vad-pro .vad__text-wrap {
