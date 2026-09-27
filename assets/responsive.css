@@ -661,6 +661,20 @@ body {
   height: 100%;
 }
 
+/* The second panel keeps its scene image full bleed, so the original number
+   marker needs its own layer and a light color to remain visible over the
+   darker photograph. Keep the existing SVG dot pattern and scroll animation;
+   this only restores its position and contrast. */
+.features__wrap.is--vad2 .product__deco-wrap {
+  z-index: 1;
+  top: clamp(2.5rem, 5vw, 6rem);
+  left: var(--page-gutter);
+  width: clamp(5rem, 7.5vw, 9.5rem);
+  color: #f1f1f1;
+  opacity: .28;
+  pointer-events: none;
+}
+
 .features__wrap.is--vad2 .product__image-wrap.is--vad2 {
   z-index: 0;
   inset: 0 auto 0 50% !important;
