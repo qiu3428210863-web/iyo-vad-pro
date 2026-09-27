@@ -12,6 +12,9 @@
       empty: document.querySelector('[sf-cart-empty]'),
       count: document.querySelector('[sf-cart-count]'),
       input: document.querySelector('[sf-change-quantity]'),
+      stepper: document.querySelector('[data-quantity-stepper]'),
+      stepUp: document.querySelector('[data-quantity-stepper] [sf-change-quantity-inc]'),
+      stepDown: document.querySelector('[data-quantity-stepper] [sf-change-quantity-dec]'),
       total: document.querySelector('[sf-cart-total]'),
       subtotal: document.querySelector('[sf-cart-subtotal]'),
       checkout: document.querySelector('[sf-checkout]'),
@@ -66,6 +69,12 @@
       elements.input.value = String(Math.max(1, next));
       elements.input.setAttribute('aria-label', '商品数量');
     }
+    if (elements.stepper) {
+      elements.stepper.setAttribute('aria-label', '调整商品数量，当前 ' + next + ' 件');
+      elements.stepper.setAttribute('data-quantity', String(next));
+    }
+    if (elements.stepUp) elements.stepUp.disabled = next >= MAX_QUANTITY;
+    if (elements.stepDown) elements.stepDown.disabled = next <= 0;
     // The product price is intentionally kept at $0 because this landing page does not expose
     // a verified price. The quantity and line state remain fully interactive.
     if (elements.total) elements.total.textContent = '$0';
