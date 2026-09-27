@@ -702,6 +702,9 @@ body {
   z-index: 2;
   width: 100%;
   padding-inline: var(--page-gutter);
+  /* The full-bleed image removes the panel padding. Keep the copy at the
+     same bottom inset as the neighboring feature panel. */
+  padding-bottom: 4vw;
 }
 
 .features__wrap.is--vad2 .product__paragraph,
@@ -781,6 +784,7 @@ body {
 
   .features__wrap.is--vad2 .product__content-wrap {
     padding-inline: var(--page-gutter);
+    padding-bottom: 12vw;
   }
 }
 
