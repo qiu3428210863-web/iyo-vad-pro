@@ -860,3 +860,30 @@ body {
   cursor: pointer;
   touch-action: manipulation;
 }
+
+/* Give the hero feature cards a wider, more substantial presentation while
+   keeping the existing card open/close and progress animations intact. */
+@media (min-width: 768px) {
+  .section.is--vad-pro .cards__container,
+  .mbzoey-hero-below .cards__container {
+    width: min(72vw, 1500px);
+  }
+
+  .section.is--vad-pro .n-card,
+  .mbzoey-hero-below .n-card {
+    padding: clamp(12px, 1.3vw, 26px);
+  }
+
+  .section.is--vad-pro .n-card__icon,
+  .mbzoey-hero-below .n-card__icon {
+    width: clamp(24px, 2.4vw, 46px);
+    height: clamp(24px, 2.4vw, 46px);
+  }
+}
+
+@media (max-width: 767px) {
+  .section.is--vad-pro .n-card,
+  .mbzoey-hero-below .n-card {
+    padding: 5.5vw;
+  }
+}
