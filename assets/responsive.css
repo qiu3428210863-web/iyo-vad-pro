@@ -592,6 +592,13 @@ body {
 /* The second feature panel uses the supplied product scene as a full-bleed background. */
 .features__wrap.is--vad2 {
   overflow: hidden;
+  padding: 0;
+}
+
+.features__wrap.is--vad2 .product__container {
+  width: 100%;
+  max-width: none;
+  height: 100%;
 }
 
 .features__wrap.is--vad2 .product__image-wrap.is--vad2 {
@@ -600,18 +607,109 @@ body {
   width: 100vw !important;
   height: 100% !important;
   align-items: stretch;
-  transform: translateX(-50%);
+  transform: translateX(-50%) scale(1.1112);
+  transform-origin: center center;
+  overflow: hidden;
 }
 
 .features__wrap.is--vad2 .product__image-wrap.is--vad2 img {
+  /* The original move module starts this image at scale(.9). The wrapper
+     compensates for that animated scale, keeping the parallax motion while
+     removing the visible letterbox around the full-bleed scene. */
   width: 100%;
-  height: 100%;
+  height: 120%;
+  max-width: 100%;
+  flex: 0 0 auto;
+  position: relative;
+  top: -10%;
   object-fit: cover;
   object-position: center;
 }
 
 .features__wrap.is--vad2 .product__content-wrap {
   z-index: 2;
+  width: 100%;
+  padding-inline: var(--page-gutter);
+}
+
+.features__wrap.is--vad2 .product__paragraph,
+.features__wrap.is--vad2 .product__description-wrap {
+  color: #fff;
+}
+
+/* Keep the three feature headlines on one desktop line. Their text column was
+   previously capped at 27vw, which forced the Chinese headings to break even
+   when there was free space beside the image. */
+.features__wrap.is--vad1 .product__text-wrap,
+.features__wrap.is--vad2 .product__text-wrap,
+.features__wrap.is--3 .product__text-wrap {
+  width: min(48vw, 980px);
+  max-width: min(48vw, 980px);
+}
+
+.features__wrap.is--vad1 .product__title h2,
+.features__wrap.is--vad2 .product__title h2,
+.features__wrap.is--3 .product__title h2 {
+  width: 100%;
+  white-space: nowrap;
+  line-height: 1.16;
+}
+
+.features__wrap.is--vad1 .product__title,
+.features__wrap.is--vad2 .product__title,
+.features__wrap.is--3 .product__title {
+  width: 100%;
+  max-width: none;
+}
+
+/* Full-image panels use a wider text column so the short headlines stay on one
+   line. The feature image with the longer campaign headline is intentionally
+   constrained to two lines. */
+.section.is--full-img .fi__text-wrap {
+  width: min(50vw, 1100px);
+  max-width: min(50vw, 1100px);
+}
+
+.section.is--full-img .fi__heading h2 {
+  width: 100%;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.section.is--full-img .fi__heading {
+  width: 100%;
+  max-width: none;
+}
+
+.section.is--full-img .fi__text {
+  width: 100%;
+  max-width: none;
+}
+
+.section.is--full-img .full-img__wrap.is--vad-feature .fi__heading h2 {
+  max-width: min(43vw, 880px);
+  white-space: normal;
+}
+
+@media (max-width: 767px) {
+  .features__wrap.is--vad1 .product__text-wrap,
+  .features__wrap.is--vad2 .product__text-wrap,
+  .features__wrap.is--3 .product__text-wrap,
+  .section.is--full-img .fi__text-wrap {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .features__wrap.is--vad1 .product__title h2,
+  .features__wrap.is--vad2 .product__title h2,
+  .features__wrap.is--3 .product__title h2,
+  .section.is--full-img .fi__heading h2 {
+    white-space: normal;
+  }
+
+  .features__wrap.is--vad2 .product__content-wrap {
+    padding-inline: var(--page-gutter);
+  }
 }
 
 /* Keep the wordmark clear of the rounded navigation edge. */
