@@ -719,6 +719,42 @@ body {
   opacity: 1;
 }
 
+/* Keep the three lower-right descriptions readable at the same rhythm. The
+   paragraph animator wraps characters in inline elements, so mirror the
+   browser's normal inline flow and apply Chinese strict line breaking to keep
+   punctuation from starting a line. Only the final line stays left aligned. */
+.features__wrap.is--vad1 .product__paragraph .paragraph,
+.features__wrap.is--vad2 .product__paragraph .paragraph,
+.features__wrap.is--3 .product__paragraph .paragraph {
+  text-align: justify;
+  text-align-last: left;
+  text-justify: inter-ideograph;
+  line-break: strict;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+.features__wrap.is--vad1 .product__paragraph .paragraph > div,
+.features__wrap.is--vad2 .product__paragraph .paragraph > div,
+.features__wrap.is--3 .product__paragraph .paragraph > div {
+  text-align: justify !important;
+  text-align-last: left !important;
+  line-break: strict;
+}
+
+.features__wrap.is--vad1 .product__paragraph .paragraph > div > div,
+.features__wrap.is--vad2 .product__paragraph .paragraph > div > div,
+.features__wrap.is--3 .product__paragraph .paragraph > div > div {
+  display: contents !important;
+}
+
+/* The third description is split into line wrappers by the original animator.
+   Let those wrappers rejoin the paragraph's inline flow so its preserved
+   Latin spacing and the same CJK line-breaking rules are applied. */
+.features__wrap.is--3 .product__paragraph .paragraph > div {
+  display: inline !important;
+}
+
 /* Keep the three feature headlines on one desktop line. Their text column was
    previously capped at 27vw, which forced the Chinese headings to break even
    when there was free space beside the image. */
