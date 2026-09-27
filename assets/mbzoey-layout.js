@@ -75,7 +75,11 @@
   background.decoding = 'async';
   background.fetchPriority = 'high';
   const maskImage = new Image();
+  const personRegionImage = new Image();
+  personRegionImage.decoding = 'async';
+  personRegionImage.fetchPriority = 'high';
   background.src = 'assets/mbzoey-beard-mask.webp';
+  personRegionImage.src = 'assets/mbzoey-person-region-mask.png';
   let maskRequested = false;
 
   const ensureMaskImage = () => {
@@ -117,64 +121,6 @@
     {x: 990, y: 680},
     {x: 995, y: 620},
   ];
-  // Source-space silhouette for the visible center portrait. The previous
-  // polygon was intentionally broad, which also lifted the four background
-  // silhouettes and the lower-right foreground figure above the word layer.
-  // These points follow the actual hair, ears, shoulders, and occlusion edge.
-  const personRegion = [
-    {x: 960, y: 205},
-    {x: 1030, y: 185},
-    {x: 1120, y: 180},
-    {x: 1200, y: 190},
-    {x: 1270, y: 215},
-    {x: 1320, y: 260},
-    {x: 1350, y: 320},
-    {x: 1365, y: 400},
-    {x: 1365, y: 450},
-    {x: 1375, y: 485},
-    {x: 1370, y: 535},
-    {x: 1348, y: 570},
-    {x: 1335, y: 620},
-    {x: 1320, y: 680},
-    {x: 1300, y: 735},
-    {x: 1280, y: 790},
-    {x: 1325, y: 835},
-    {x: 1410, y: 860},
-    {x: 1490, y: 900},
-    {x: 1575, y: 940},
-    {x: 1650, y: 980},
-    {x: 1690, y: 1020},
-    {x: 1620, y: 1080},
-    {x: 1540, y: 1130},
-    {x: 1460, y: 1180},
-    {x: 1390, y: 1230},
-    {x: 1345, y: 1300},
-    {x: 1325, y: 1400},
-    {x: 1320, y: 1550},
-    {x: 1320, y: 1728},
-    {x: 450, y: 1728},
-    {x: 460, y: 1550},
-    {x: 470, y: 1400},
-    {x: 490, y: 1260},
-    {x: 520, y: 1140},
-    {x: 560, y: 1040},
-    {x: 620, y: 980},
-    {x: 700, y: 920},
-    {x: 790, y: 870},
-    {x: 880, y: 830},
-    {x: 935, y: 790},
-    {x: 915, y: 730},
-    {x: 885, y: 650},
-    {x: 860, y: 575},
-    {x: 840, y: 540},
-    {x: 825, y: 510},
-    {x: 825, y: 465},
-    {x: 840, y: 430},
-    {x: 840, y: 350},
-    {x: 865, y: 280},
-    {x: 910, y: 230},
-  ];
-
   const setupCanvas = (canvas, rect, dpr) => {
     const pixelWidth = Math.max(1, Math.round(rect.width * dpr));
     const pixelHeight = Math.max(1, Math.round(rect.height * dpr));
@@ -267,6 +213,10 @@
   };
 
   const drawPersonLayer = (context, rect, dpr) => {
+    if (!personRegionImage.complete || !personRegionImage.naturalWidth) {
+      context.clearRect(0, 0, rect.width, rect.height);
+      return;
+    }
     if (personMaskCanvas.width !== Math.round(rect.width * dpr) ||
         personMaskCanvas.height !== Math.round(rect.height * dpr)) {
       personMaskCanvas.width = Math.max(1, Math.round(rect.width * dpr));
@@ -276,15 +226,13 @@
     personMaskContext.filter = 'none';
     personMaskContext.clearRect(0, 0, rect.width, rect.height);
     personMaskContext.filter = `blur(${Math.max(2, 4 * state.scale) / dpr}px)`;
-    personMaskContext.fillStyle = '#fff';
-    personMaskContext.beginPath();
-    personRegion.forEach((point, index) => {
-      const viewportPoint = sourceToViewport(point);
-      if (index === 0) personMaskContext.moveTo(viewportPoint.x, viewportPoint.y);
-      else personMaskContext.lineTo(viewportPoint.x, viewportPoint.y);
-    });
-    personMaskContext.closePath();
-    personMaskContext.fill();
+    personMaskContext.drawImage(
+      personRegionImage,
+      state.offsetX,
+      state.offsetY,
+      source.width * state.scale,
+      source.height * state.scale,
+    );
     personMaskContext.filter = 'none';
     context.globalCompositeOperation = 'destination-in';
     context.drawImage(personMaskCanvas, 0, 0, rect.width, rect.height);
@@ -524,6 +472,8 @@
   };
   background.addEventListener('load', initializeBackground, {once: true});
   background.addEventListener('error', () => interaction.classList.add('is-image-error'), {once: true});
+  personRegionImage.addEventListener('load', requestDraw, {once: true});
   if (background.complete && background.naturalWidth) initializeBackground();
   else if (background.decode) background.decode().then(initializeBackground).catch(() => {});
+  if (personRegionImage.complete && personRegionImage.naturalWidth) requestDraw();
 })();
