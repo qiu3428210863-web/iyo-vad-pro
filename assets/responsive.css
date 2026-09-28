@@ -782,9 +782,7 @@ body {
   max-width: none;
 }
 
-/* Full-image panels use a wider text column so the short headlines stay on one
-   line. The feature image with the longer campaign headline is intentionally
-   constrained to two lines. */
+/* Full-image panels use a wider text column so the headlines stay on one line. */
 .section.is--full-img .fi__text-wrap {
   width: min(50vw, 1100px);
   max-width: min(50vw, 1100px);
@@ -807,8 +805,8 @@ body {
 }
 
 .section.is--full-img .full-img__wrap.is--vad-feature .fi__heading h2 {
-  max-width: min(43vw, 880px);
-  white-space: normal;
+  max-width: none;
+  white-space: nowrap;
 }
 
 @media (max-width: 767px) {
