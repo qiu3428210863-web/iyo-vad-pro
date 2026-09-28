@@ -671,7 +671,6 @@ body {
   z-index: 1;
   top: clamp(2.5rem, 5vw, 6rem);
   left: var(--page-gutter);
-  width: clamp(5rem, 7.5vw, 9.5rem);
   color: #f1f1f1;
   opacity: .28;
   pointer-events: none;
