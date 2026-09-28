@@ -1436,3 +1436,136 @@ body {
     margin-top: 124px;
   }
 }
+
+/* The menu now presents the three shaver finishes as a single, consistent
+   product row. The cards keep the navigation panel's existing reveal and
+   hover behavior while the artwork and color labels identify each finish. */
+.mbzoey-color-row {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(6px, .7vw, 12px);
+  width: 100%;
+}
+
+.mbzoey-color-card {
+  position: relative;
+  isolation: isolate;
+  width: auto !important;
+  min-width: 0;
+  min-height: clamp(260px, 30vw, 430px);
+  color: #101010;
+  border-radius: clamp(14px, 1vw, 20px) !important;
+  overflow: hidden;
+  background: #f4f4f4;
+  transition: transform .45s cubic-bezier(.22, 1, .36, 1), box-shadow .45s ease;
+}
+
+.mbzoey-color-card:hover,
+.mbzoey-color-card.is-card-hovering {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, .18);
+}
+
+.mbzoey-color-card__media,
+.mbzoey-color-card__shade {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.mbzoey-color-card__media {
+  z-index: -2;
+}
+
+.mbzoey-color-card__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: center;
+}
+
+.mbzoey-color-card__shade {
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .02) 35%, rgba(255, 255, 255, .75) 100%);
+  pointer-events: none;
+}
+
+.mbzoey-color-card--green {
+  background: #dbe8e1;
+}
+
+.mbzoey-color-card--gold {
+  background: #f3e1bb;
+}
+
+.mbzoey-color-card--black {
+  background: #d8d8d8;
+}
+
+.mbzoey-color-card__label {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: .2rem;
+  padding: clamp(14px, 1.3vw, 24px);
+  text-align: left;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, .6);
+}
+
+.mbzoey-color-card__title {
+  font: 500 clamp(18px, 1.55vw, 28px)/1.15 Roobert Regular, Arial, sans-serif;
+  letter-spacing: -.02em;
+}
+
+.mbzoey-color-card__meta {
+  max-width: 12em;
+  opacity: .86;
+  font: 400 clamp(10px, .85vw, 15px)/1.25 Roobert Regular, Arial, sans-serif;
+}
+
+.mbzoey-color-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(0, 0, 0, .34) 0%, rgba(0, 0, 0, 0) 42%, rgba(255, 255, 255, .18) 100%);
+}
+
+@media (max-width: 767px) {
+  .mbzoey-color-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .mbzoey-color-card {
+    min-height: clamp(220px, 64vw, 360px);
+  }
+
+  .mbzoey-color-card__label {
+    padding: clamp(10px, 3vw, 16px);
+  }
+
+  .mbzoey-color-card__title {
+    font-size: clamp(14px, 4vw, 22px);
+  }
+
+  .mbzoey-color-card__meta {
+    font-size: clamp(9px, 2.2vw, 12px);
+  }
+}
+
+@media (max-width: 420px) {
+  .mbzoey-color-card {
+    min-height: 210px;
+  }
+
+  .mbzoey-color-card__meta {
+    display: none;
+  }
+}
