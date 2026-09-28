@@ -845,6 +845,238 @@ body {
   }
 }
 
+/* Small screens use normal document flow for the sections that are layered on
+   desktop. This prevents the image, title, and description from competing for
+   the same space when the viewport narrows. */
+@media (max-width: 767px) {
+  :root {
+    --page-gutter: clamp(16px, 5vw, 28px);
+  }
+
+  .mbzoey-hero-below {
+    min-height: 0;
+  }
+
+  .mbzoey-hero-below .highlight__wrapper {
+    display: block;
+    min-height: 0;
+    padding-block: clamp(32px, 9vw, 64px);
+  }
+
+  .mbzoey-hero-below .highlight__text-wrap {
+    left: auto;
+    width: 100%;
+    margin-bottom: clamp(24px, 7vw, 48px);
+  }
+
+  .mbzoey-hero-below .highlight__wrap,
+  .mbzoey-hero-below .highlight-text-h {
+    width: 100%;
+    max-width: none;
+  }
+
+  .mbzoey-hero-below .highlight-text-h {
+    font-size: clamp(22px, 6vw, 32px) !important;
+    line-height: 1.34 !important;
+  }
+
+  .mbzoey-hero-below .cards__wrap {
+    height: auto;
+    min-height: 0;
+    padding: 0 var(--page-gutter) clamp(40px, 10vw, 72px);
+    overflow: visible;
+  }
+
+  .mbzoey-hero-below .cards__container {
+    width: 100%;
+    height: auto;
+  }
+
+  .mbzoey-hero-below .n-cards__group {
+    position: relative;
+    inset: auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    width: 100%;
+    height: auto;
+  }
+
+  .mbzoey-hero-below .n-card,
+  .mbzoey-hero-below .n-card.is--1,
+  .mbzoey-hero-below .n-card.is--3 {
+    top: auto;
+    width: 100%;
+    min-height: 72px;
+    height: auto;
+    margin: 0;
+    padding: clamp(14px, 4vw, 22px);
+  }
+
+  .section.is--features {
+    height: auto;
+    min-height: 0;
+  }
+
+  .section.is--features .features__wrap,
+  .features__wrap.is--vad1,
+  .features__wrap.is--vad2,
+  .features__wrap.is--3 {
+    height: auto;
+    min-height: 0;
+    padding: 0 var(--page-gutter) clamp(48px, 11vw, 88px);
+    overflow: hidden;
+  }
+
+  .section.is--features .product__container {
+    height: auto;
+    min-height: 0;
+    align-items: stretch;
+  }
+
+  .section.is--features .product__deco-wrap {
+    z-index: 3;
+    top: clamp(18px, 6vw, 40px);
+    left: var(--page-gutter);
+    right: auto;
+    width: clamp(56px, 17vw, 96px);
+  }
+
+  .section.is--features .product__image-wrap,
+  .features__wrap.is--vad1 .product__image-wrap.is--vad1,
+  .features__wrap.is--vad2 .product__image-wrap.is--vad2 {
+    position: relative;
+    inset: auto !important;
+    z-index: 0;
+    order: 1;
+    width: calc(100% + (2 * var(--page-gutter))) !important;
+    height: clamp(260px, 72vw, 520px) !important;
+    margin-inline: calc(-1 * var(--page-gutter));
+    overflow: hidden;
+    transform: none !important;
+  }
+
+  .section.is--features .product__image-wrap img,
+  .features__wrap.is--vad1 .product__image-wrap.is--vad1 img,
+  .features__wrap.is--vad2 .product__image-wrap.is--vad2 img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .features__wrap.is--vad1 .product__image-wrap.is--vad1 img {
+    object-position: 58% center;
+  }
+
+  .features__wrap.is--3 .product__image-wrap img {
+    object-fit: contain;
+    background: #f9f9fb;
+  }
+
+  .section.is--features .product__content-wrap {
+    position: relative;
+    inset: auto !important;
+    z-index: 2;
+    order: 2;
+    display: flex;
+    align-items: stretch;
+    width: 100% !important;
+    max-width: none;
+    gap: clamp(20px, 6vw, 36px);
+    padding: clamp(24px, 7vw, 48px) 0 0 !important;
+  }
+
+  .section.is--features .product__text-wrap,
+  .section.is--features .product__description-wrap {
+    width: 100%;
+    max-width: none;
+  }
+
+  .section.is--features .product__title,
+  .section.is--features .product__title h2 {
+    width: 100%;
+    max-width: none;
+    white-space: normal;
+  }
+
+  .section.is--features .product__title h2 {
+    font-size: clamp(28px, 8vw, 52px);
+    line-height: 1.16;
+  }
+
+  .section.is--features .product__paragraph .paragraph {
+    font-size: clamp(14px, 3.8vw, 18px);
+    line-height: 1.55;
+  }
+
+  .section.is--full-img .full-img__wrap {
+    min-height: 100svh;
+  }
+
+  .section.is--full-img .fi__text-wrap {
+    width: 100%;
+    max-width: none;
+    padding: clamp(24px, 7vw, 48px) var(--page-gutter);
+  }
+
+  .section.is--full-img .fi__heading h2 {
+    max-width: 100%;
+    font-size: clamp(30px, 8vw, 56px);
+    line-height: 1.2;
+  }
+
+  .full-img__wrap.is--vad-feature {
+    height: auto;
+    min-height: 100svh;
+  }
+
+  .full-img__wrap.is--vad-feature .fi__img,
+  .full-img__wrap.is--vad-feature .fi__overlay {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+  }
+
+  .full-img__wrap.is--vad-feature .spacing__wrap {
+    position: relative;
+    inset: auto;
+    height: auto;
+    min-height: 100svh;
+    padding: clamp(24px, 7vw, 48px) var(--page-gutter);
+  }
+
+  .full-img__wrap.is--vad-feature .spacing__container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100svh;
+  }
+
+  .full-img__wrap.is--vad-feature .fi__text-wrap.is--top {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    max-width: none;
+    padding: 0;
+  }
+
+  .full-img__wrap.is--vad-feature .app__accordion-wrap {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    max-width: none;
+    margin-top: clamp(24px, 6vw, 40px);
+  }
+
+  .full-img__wrap.is--vad-feature .app__accordion,
+  .full-img__wrap.is--vad-feature .app__list {
+    width: 100%;
+  }
+}
+
 /* Keep the wordmark clear of the rounded navigation edge. */
 .centered-nav__logo {
   position: relative;
@@ -897,6 +1129,183 @@ body {
   .section.is--vad-pro .n-card,
   .mbzoey-hero-below .n-card {
     padding: 5.5vw;
+  }
+}
+
+/* The technical details section is a two-row desktop composition. On a
+   narrow viewport each visual and specification group gets its own row so
+   the labels remain readable and the measured product stays in frame. */
+@media (max-width: 767px) {
+  .section.is--tech {
+    height: auto;
+    min-height: 0;
+  }
+
+  .section.is--tech .tech__intro {
+    min-height: 0;
+    padding: clamp(36px, 10vw, 72px) var(--page-gutter);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: clamp(20px, 6vw, 36px);
+  }
+
+  .section.is--tech .tech__title,
+  .section.is--tech .tech__description {
+    width: 100%;
+    max-width: none;
+  }
+
+  .section.is--tech .tech__title .h-h3 {
+    font-size: clamp(34px, 9vw, 58px);
+    line-height: 1.12;
+  }
+
+  .section.is--tech .tech__description .h-h4 {
+    font-size: clamp(18px, 4.8vw, 28px);
+    line-height: 1.35;
+  }
+
+  .section.is--tech .tech__wrap {
+    display: block;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .section.is--tech .tech__content,
+  .section.is--tech .tech__top,
+  .section.is--tech .tech__bottom {
+    display: flex;
+    height: auto;
+    flex-direction: column;
+  }
+
+  .section.is--tech .tech__container {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+  }
+
+  .section.is--tech .tech__container.is--1 {
+    min-height: 0;
+  }
+
+  .section.is--tech .tech__container.is--2 {
+    min-height: clamp(280px, 70vw, 520px);
+    padding: clamp(22px, 6vw, 42px) var(--page-gutter);
+  }
+
+  .section.is--tech .tech__container.is--3 {
+    min-height: clamp(260px, 68vw, 520px);
+  }
+
+  .section.is--tech .tech__container.is--4 {
+    min-height: 0;
+  }
+
+  .section.is--tech .tech__specs-wrapper {
+    min-height: 0;
+    width: 100%;
+  }
+
+  .section.is--tech .tech__info-eyebrow {
+    padding: clamp(22px, 6vw, 40px) var(--page-gutter) clamp(10px, 3vw, 18px);
+  }
+
+  .section.is--tech .specs__row {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding: clamp(12px, 3.2vw, 20px) var(--page-gutter);
+  }
+
+  .section.is--tech .specs__info {
+    flex: 0 0 34%;
+  }
+
+  .section.is--tech .specs__description {
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: right;
+  }
+
+  .section.is--tech .measures__wrap,
+  .section.is--tech .charger__wrap {
+    width: 100%;
+    min-height: inherit;
+  }
+
+  .section.is--tech .measure__img.is--vad {
+    width: min(78vw, 560px);
+    top: 0;
+  }
+
+  .section.is--tech .measure__svg {
+    width: 100%;
+  }
+
+  .section.is--tech .charger__img {
+    width: min(76vw, 520px);
+  }
+
+  .section.is--tech .div__line.is--vertical {
+    width: 100%;
+    height: 1px;
+  }
+
+  .section.is--faq {
+    height: auto;
+    min-height: 0;
+  }
+
+  .section.is--faq .faq-list-wrapper {
+    display: flex;
+    align-items: stretch;
+    padding: clamp(48px, 12vw, 88px) var(--page-gutter);
+  }
+
+  .section.is--faq .faq-list {
+    width: 100%;
+    max-width: none;
+  }
+
+  .section.is--faq .faq-item {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr);
+    column-gap: clamp(10px, 3vw, 20px);
+    width: 100%;
+    padding: 0;
+  }
+
+  .section.is--faq .faq__number {
+    justify-content: flex-start;
+    padding-top: 1.15rem;
+    margin-top: 0;
+  }
+
+  .section.is--faq .expandable-w {
+    min-width: 0;
+  }
+
+  .section.is--faq .expandable-label {
+    gap: 12px;
+    padding-block: clamp(18px, 5vw, 28px);
+  }
+
+  .section.is--faq .faq__text {
+    width: auto;
+    max-width: none;
+    font-size: clamp(18px, 5vw, 28px) !important;
+    line-height: 1.35;
+  }
+
+  .section.is--faq .expandable-icon {
+    flex: 0 0 22px;
+    width: 22px;
+  }
+
+  .section.is--faq .hotspot-content {
+    max-width: 100%;
+    padding: 0 0 clamp(14px, 4vw, 24px);
   }
 }
 
