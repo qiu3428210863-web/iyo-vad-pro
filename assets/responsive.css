@@ -701,6 +701,21 @@ body {
   object-position: center;
 }
 
+/* Fill the first feature panel's image area so the transparent subject does
+   not sit as a small centered strip inside the scene. The move module still
+   owns the transform for the scroll-linked motion. */
+.features__wrap.is--vad1 .product__image-wrap.is--vad1 {
+  height: calc(100% - 8vw);
+}
+
+.features__wrap.is--vad1 .product__image-wrap.is--vad1 img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: center center;
+}
+
 .features__wrap.is--vad2 .product__content-wrap {
   z-index: 2;
   width: 100%;
