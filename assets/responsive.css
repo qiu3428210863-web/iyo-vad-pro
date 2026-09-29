@@ -365,7 +365,23 @@ body {
 
 .mbzoey-hero-below .highlight-text-h {
   overflow-wrap: normal;
-  word-break: keep-all;
+  word-break: normal;
+  line-break: strict;
+}
+
+/* The fill-text animator wraps every character in an inline-block. That
+   makes punctuation an atomic box, so a comma or period can be pushed to the
+   next line by itself. Restore normal inline CJK flow for this paragraph and
+   let strict line breaking keep closing punctuation with the preceding text. */
+.mbzoey-hero-below .highlight-text-h[data-module="fill-text"] > div > div {
+  display: inline !important;
+  position: static !important;
+  white-space: normal;
+}
+
+.mbzoey-hero-below .highlight-text-h[data-module="fill-text"] > div {
+  display: block !important;
+  width: 100% !important;
 }
 
 .mbzoey-hero-below .cards__wrap {

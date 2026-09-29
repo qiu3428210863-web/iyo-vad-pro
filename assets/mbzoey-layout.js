@@ -17,6 +17,34 @@
   if (highlight) below.appendChild(highlight);
   if (cards) below.appendChild(cards);
 
+  // The fill-text animator turns every character into an inline element.
+  // Insert zero-width break opportunities between characters, while using a
+  // word joiner before closing punctuation so commas and periods stay with
+  // the preceding character instead of starting a new line.
+  const normalizeHighlightPunctuation = () => {
+    const closingPunctuation = new Set([
+      '，', '。', '、', '！', '？', '；', '：', '…',
+      '）', '】', '》', '」', '』', '〕', '〉', '”', '’',
+      ',', '.', '!', '?', ';', ':', ')', ']', '}',
+    ]);
+    below.querySelectorAll('.highlight-text-h[data-module="fill-text"]').forEach((paragraph) => {
+      const groups = [...paragraph.children].filter((element) => element.children.length);
+      groups.forEach((group) => {
+        if (group.dataset.mbzoeyPunctuationNormalized === 'true') return;
+        const characters = [...group.children].filter((element) => element.textContent.length === 1);
+        if (!characters.length) return;
+        characters.slice(1).forEach((character) => {
+          const glue = closingPunctuation.has(character.textContent) ? '\u2060' : '\u200B';
+          group.insertBefore(document.createTextNode(glue), character);
+        });
+        group.dataset.mbzoeyPunctuationNormalized = 'true';
+      });
+    });
+  };
+  normalizeHighlightPunctuation();
+  const highlightObserver = new MutationObserver(normalizeHighlightPunctuation);
+  highlightObserver.observe(below, {childList: true, subtree: true});
+
   const interaction = document.createElement('div');
   interaction.className = 'mbzoey-shave-interaction';
   interaction.setAttribute('aria-label', '点击人脸即可剃须');
