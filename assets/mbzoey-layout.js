@@ -19,7 +19,7 @@
 
   const interaction = document.createElement('div');
   interaction.className = 'mbzoey-shave-interaction';
-  interaction.setAttribute('aria-label', '点击人脸即可剃须');
+  interaction.setAttribute('aria-label', '在胡须区域滑动剃须，完成80%后继续下滑');
   interaction.innerHTML = `
     <canvas class="mbzoey-shave-canvas mbzoey-shave-base" aria-hidden="true"></canvas>
     <span class="mbzoey-layer-word mbzoey-layer-word--left" aria-hidden="true">MBZ</span>
@@ -27,7 +27,7 @@
     <canvas class="mbzoey-shave-canvas mbzoey-person-layer" aria-hidden="true"></canvas>
     <canvas class="mbzoey-shave-canvas mbzoey-shave-reveal" aria-hidden="true"></canvas>
     <img class="mbzoey-shaver-cursor" src="assets/mbzoey-shaver-cursor.webp" alt="" aria-hidden="true">
-    <span class="mbzoey-shave-hint"><span class="mbzoey-shave-hint__inner">点击人脸即可剃须</span></span>
+    <span class="mbzoey-shave-hint"><span class="mbzoey-shave-hint__inner">在胡须区域滑动剃须 · 0%</span></span>
   `;
   hero.prepend(interaction);
 
@@ -38,6 +38,7 @@
   cursor.decoding = 'async';
   cursor.fetchPriority = 'high';
   const hint = interaction.querySelector('.mbzoey-shave-hint');
+  const hintInner = interaction.querySelector('.mbzoey-shave-hint__inner');
   let hintPositionFrame = 0;
   let hintPositioned = false;
   let hintOverBeard = false;
@@ -196,6 +197,81 @@
     return inside;
   };
 
+  // The first screen stays pinned until the visitor has shaved 80% of the
+  // beard polygon. Samples are deliberately spaced out so the threshold
+  // measures area coverage rather than the number of pointer events.
+  const shaveUnlockThreshold = .8;
+  const shaveBrushRadius = 88;
+  const shaveSampleStep = 28;
+  const beardBounds = beardRegion.reduce((bounds, point) => ({
+    minX: Math.min(bounds.minX, point.x),
+    minY: Math.min(bounds.minY, point.y),
+    maxX: Math.max(bounds.maxX, point.x),
+    maxY: Math.max(bounds.maxY, point.y),
+  }), {minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity});
+  const coverageSamples = [];
+  for (let y = beardBounds.minY; y <= beardBounds.maxY; y += shaveSampleStep) {
+    for (let x = beardBounds.minX; x <= beardBounds.maxX; x += shaveSampleStep) {
+      if (isInBeard({x, y})) coverageSamples.push({x, y});
+    }
+  }
+  const coveredSamples = new Uint8Array(coverageSamples.length);
+  let coveredSampleCount = 0;
+  let scrollUnlocked = false;
+  const scrollKeys = new Set(['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' ']);
+  const preventLockedScroll = (event) => {
+    if (scrollUnlocked) return;
+    if (event.type === 'keydown' && !scrollKeys.has(event.key)) return;
+    event.preventDefault();
+    event.stopPropagation();
+  };
+  const setScrollUnlocked = (unlocked) => {
+    scrollUnlocked = unlocked;
+    document.documentElement.classList.toggle('mbzoey-scroll-locked', !unlocked);
+    document.body.classList.toggle('mbzoey-scroll-locked', !unlocked);
+    interaction.classList.toggle('is-scroll-unlocked', unlocked);
+    interaction.classList.toggle('is-complete', unlocked);
+    interaction.setAttribute('aria-label', unlocked
+      ? '剃须完成，可以继续下滑'
+      : '在胡须区域滑动剃须，完成80%后继续下滑');
+    if (!unlocked && window.scrollY > 0) window.scrollTo(0, 0);
+    if (unlocked) hintInner.textContent = '剃须完成，可以继续下滑';
+  };
+  const updateCoverage = (point) => {
+    const radiusSquared = shaveBrushRadius * shaveBrushRadius;
+    for (let index = 0; index < coverageSamples.length; index += 1) {
+      if (coveredSamples[index]) continue;
+      const sample = coverageSamples[index];
+      const dx = sample.x - point.x;
+      const dy = sample.y - point.y;
+      if (dx * dx + dy * dy <= radiusSquared) {
+        coveredSamples[index] = 1;
+        coveredSampleCount += 1;
+      }
+    }
+    const ratio = coverageSamples.length ? coveredSampleCount / coverageSamples.length : 0;
+    const percent = Math.round(ratio * 100);
+    interaction.style.setProperty('--mbzoey-shave-progress', `${percent}%`);
+    if (!scrollUnlocked) hintInner.textContent = `在胡须区域滑动剃须 · ${percent}%`;
+    if (ratio >= shaveUnlockThreshold) setScrollUnlocked(true);
+  };
+  const recordPoint = (point) => {
+    if (!isInBeard(point)) return;
+    const previous = state.points[state.points.length - 1];
+    if (previous && Math.hypot(point.x - previous.x, point.y - previous.y) <= 18) return;
+    state.points.push(point);
+    updateCoverage(point);
+    ensureMaskImage().then(requestDraw);
+    requestDraw();
+  };
+  setScrollUnlocked(false);
+  window.addEventListener('wheel', preventLockedScroll, {passive: false, capture: true});
+  window.addEventListener('touchmove', preventLockedScroll, {passive: false, capture: true});
+  window.addEventListener('keydown', preventLockedScroll, {capture: true});
+  window.addEventListener('scroll', () => {
+    if (!scrollUnlocked && window.scrollY > 0) window.scrollTo(0, 0);
+  }, {passive: true});
+
   // The shaver belongs to the first screen only. A stationary pointer does not
   // emit pointerleave when the document scrolls underneath it, so visibility
   // must also follow the hero's viewport intersection instead of relying on
@@ -348,14 +424,7 @@
     const point = pointToSource(event);
     const insideBeard = isInBeard(point);
     updateHintRegion(insideBeard);
-    if (state.active && insideBeard) {
-      const previous = state.points[state.points.length - 1];
-      if (!previous || Math.hypot(point.x - previous.x, point.y - previous.y) > 18) {
-        state.points.push(point);
-        ensureMaskImage().then(requestDraw);
-        requestDraw();
-      }
-    }
+    if (state.active && insideBeard) recordPoint(point);
   };
 
   let pointerFrame = 0;
@@ -385,16 +454,13 @@
   const start = (event) => {
     if (!heroInView) return;
     event.preventDefault();
-    state.active = true;
     interaction.setPointerCapture?.(event.pointerId);
     updatePointer(event);
     const point = pointToSource(event);
-    if (isInBeard(point)) {
-      state.points.push(point);
-      ensureMaskImage().then(requestDraw);
-      requestDraw();
-    }
-    interaction.classList.add('is-shaving');
+    const insideBeard = isInBeard(point);
+    state.active = insideBeard;
+    if (insideBeard) recordPoint(point);
+    interaction.classList.toggle('is-shaving', insideBeard);
   };
 
   const stop = () => {

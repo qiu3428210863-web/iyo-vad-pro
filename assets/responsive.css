@@ -15,6 +15,13 @@ html {
   scroll-padding-top: 100px;
 }
 
+html.mbzoey-scroll-locked,
+body.mbzoey-scroll-locked {
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+  scrollbar-gutter: stable;
+}
+
 body {
   overflow-x: clip;
   /* iyo-out.css hides the document until the original runtime finishes.
@@ -70,6 +77,15 @@ body {
   background-repeat: no-repeat;
   background-size: var(--mbzoey-image-size, cover);
   cursor: none;
+}
+
+.mbzoey-shave-interaction.is-scroll-unlocked {
+  touch-action: pan-y;
+}
+
+.mbzoey-shave-interaction.is-complete .mbzoey-shave-hint__inner {
+  background: rgba(255, 255, 255, .9);
+  color: #101010;
 }
 
 /* The shaver is scoped to the first screen. Hide the last pointer position
@@ -712,8 +728,24 @@ body {
   width: 100%;
   height: 100%;
   max-width: none;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: right center;
+  background: #f9f9fb;
+}
+
+.features__wrap.is--vad1 .product__image-wrap.is--vad1,
+.features__wrap.is--3 .product__image-wrap.is--vad3 {
+  background: #f9f9fb;
+  overflow: hidden;
+}
+
+.features__wrap.is--3 .product__image-wrap.is--vad3 img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: contain;
   object-position: center center;
+  background: #f9f9fb;
 }
 
 .features__wrap.is--vad2 .product__content-wrap {
@@ -821,6 +853,16 @@ body {
 .section.is--full-img .full-img__wrap.is--vad-feature .fi__heading h2 {
   max-width: none;
   white-space: nowrap;
+}
+
+/* The pale portrait scene needs dark copy in the upper-left text block. */
+.section.is--full-img .full-img__wrap.is--vad-feature .fi__text-wrap.is--top,
+.section.is--full-img .full-img__wrap.is--vad-feature .fi__text-wrap.is--top .fi__text,
+.section.is--full-img .full-img__wrap.is--vad-feature .fi__text-wrap.is--top .fi__heading h2,
+.section.is--full-img .full-img__wrap.is--vad-feature .fi__text-wrap.is--top .fi__paragraph,
+.section.is--full-img .full-img__wrap.is--vad-feature .fi__text-wrap.is--top .fi__paragraph .paragraph {
+  color: #101010 !important;
+  text-shadow: none;
 }
 
 @media (max-width: 767px) {
@@ -968,12 +1010,16 @@ body {
   }
 
   .features__wrap.is--vad1 .product__image-wrap.is--vad1 img {
-    object-position: 58% center;
+    object-fit: contain;
+    object-position: right center;
+    background: #f9f9fb;
   }
 
-  .features__wrap.is--3 .product__image-wrap img {
+  .features__wrap.is--3 .product__image-wrap img,
+  .features__wrap.is--3 .product__image-wrap.is--vad3 img {
     object-fit: contain;
     background: #f9f9fb;
+    object-position: center center;
   }
 
   .section.is--features .product__content-wrap {
@@ -1306,134 +1352,6 @@ body {
   .section.is--faq .hotspot-content {
     max-width: 100%;
     padding: 0 0 clamp(14px, 4vw, 24px);
-  }
-}
-
-/* Lightweight first-paint veil: the page can finish decoding behind this
-   diffused gradient, then reveal the real content without a hard jump. */
-.mbzoey-page-loader {
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  isolation: isolate;
-  background: #101010;
-  color: #fff;
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  transition: opacity .68s cubic-bezier(.22, 1, .36, 1), visibility 0s linear .68s;
-}
-
-.mbzoey-page-loader.is-ready {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-.mbzoey-page-loader::before {
-  content: "";
-  position: absolute;
-  inset: -22%;
-  z-index: -2;
-  background:
-    radial-gradient(circle at 24% 35%, rgba(232, 245, 210, .34), transparent 28%),
-    radial-gradient(circle at 72% 64%, rgba(112, 145, 255, .24), transparent 32%),
-    radial-gradient(circle at 54% 44%, rgba(255, 255, 255, .1), transparent 42%);
-  filter: blur(34px);
-  transform: scale(1.02);
-  animation: mbzoey-loader-breathe 1.8s cubic-bezier(.4, 0, .2, 1) 0s 2 alternate both;
-}
-
-.mbzoey-page-loader::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: radial-gradient(circle at center, rgba(255, 255, 255, .08), transparent 36%);
-  mix-blend-mode: screen;
-}
-
-.mbzoey-page-loader__halo,
-.mbzoey-page-loader__core {
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.mbzoey-page-loader__halo {
-  width: min(42vw, 560px);
-  height: min(42vw, 560px);
-  filter: blur(46px);
-  opacity: .58;
-  transform: translate3d(0, 0, 0) scale(.86);
-  animation: mbzoey-loader-drift 1.7s cubic-bezier(.45, .05, .55, .95) 0s 2 alternate both;
-}
-
-.mbzoey-page-loader__halo--one {
-  background: rgba(217, 236, 190, .48);
-  translate: -20% -10%;
-}
-
-.mbzoey-page-loader__halo--two {
-  background: rgba(104, 135, 255, .32);
-  translate: 24% 18%;
-  animation-delay: .18s;
-  animation-direction: alternate-reverse;
-}
-
-.mbzoey-page-loader__core {
-  width: 76px;
-  height: 76px;
-  background: rgba(255, 255, 255, .14);
-  box-shadow: 0 0 70px rgba(233, 245, 210, .26);
-  filter: blur(2px);
-  animation: mbzoey-loader-core 1.35s ease-in-out 0s 3 alternate both;
-}
-
-.mbzoey-page-loader__label {
-  position: relative;
-  z-index: 1;
-  margin-top: 148px;
-  color: rgba(255, 255, 255, .78);
-  font: 700 clamp(12px, 1.2vw, 16px)/1 Arial, sans-serif;
-  letter-spacing: .24em;
-  text-indent: .24em;
-}
-
-@keyframes mbzoey-loader-breathe {
-  from { transform: scale(1.02) rotate(0deg); opacity: .72; }
-  to { transform: scale(1.13) rotate(7deg); opacity: 1; }
-}
-
-@keyframes mbzoey-loader-drift {
-  from { transform: translate3d(-4vw, -2vh, 0) scale(.84); }
-  to { transform: translate3d(4vw, 3vh, 0) scale(1.08); }
-}
-
-@keyframes mbzoey-loader-core {
-  from { transform: scale(.82); opacity: .48; }
-  to { transform: scale(1.08); opacity: .88; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .mbzoey-page-loader::before,
-  .mbzoey-page-loader__halo,
-  .mbzoey-page-loader__core {
-    animation: none;
-  }
-}
-
-@media (max-width: 767px) {
-  .mbzoey-page-loader__halo {
-    width: 72vw;
-    height: 72vw;
-  }
-
-  .mbzoey-page-loader__label {
-    margin-top: 124px;
   }
 }
 
