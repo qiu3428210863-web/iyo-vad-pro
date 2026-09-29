@@ -1370,7 +1370,7 @@ body {
   isolation: isolate;
   width: auto !important;
   min-width: 0;
-  min-height: clamp(260px, 30vw, 430px);
+  min-height: clamp(180px, 18vw, 260px);
   color: #101010;
   border-radius: clamp(14px, 1vw, 20px) !important;
   overflow: hidden;
@@ -1462,7 +1462,7 @@ body {
   }
 
   .mbzoey-color-card {
-    min-height: clamp(220px, 64vw, 360px);
+    min-height: clamp(168px, 48vw, 260px);
   }
 
   .mbzoey-color-card__label {
@@ -1480,10 +1480,24 @@ body {
 
 @media (max-width: 420px) {
   .mbzoey-color-card {
-    min-height: 210px;
+    min-height: clamp(168px, 46vw, 208px);
   }
 
   .mbzoey-color-card__meta {
     display: none;
   }
+}
+
+/* Keep the compact product menu visible while its three cards expand. */
+[data-navigation-status="active"] .centered-nav__content {
+  grid-template-rows: 1fr !important;
+  height: auto !important;
+  min-height: 0;
+  max-height: none;
+  overflow: visible !important;
+}
+
+[data-navigation-status="active"] .centered-nav__inner {
+  height: auto !important;
+  min-height: 0;
 }
