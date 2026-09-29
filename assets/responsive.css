@@ -738,7 +738,10 @@ body {
 @media (min-width: 768px) {
   .features__wrap.is--vad1,
   .features__wrap.is--3 {
-    padding-inline: 0;
+    /* Match the second panel's edge-to-edge coordinate system. The base
+       feature style adds 4vw padding, which pushed the number markers and
+       transparent subjects below the panel top. */
+    padding: 0;
   }
 
   .features__wrap.is--vad1 .product__container,
@@ -748,9 +751,13 @@ body {
   }
 
   .features__wrap.is--vad1 .product__deco-wrap,
+  .features__wrap.is--vad2 .product__deco-wrap,
   .features__wrap.is--3 .product__deco-wrap {
     z-index: 1;
-    top: clamp(2.5rem, 5vw, 6rem);
+    /* Use one top anchor for all three panels. The original feature rules
+       give panels 1 and 3 different offsets at some desktop widths. */
+    top: clamp(2.5rem, 5vw, 6rem) !important;
+    bottom: auto !important;
     left: var(--page-gutter);
   }
 
