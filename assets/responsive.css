@@ -23,6 +23,19 @@ body {
   visibility: visible;
 }
 
+/* Keep the upper-left copy on the elder portrait scene legible in solid
+   black. The scope is limited to this feature panel so navigation and the
+   other image sections retain their existing contrast treatment. */
+.section.is--full-img .full-img__wrap.is--vad-feature .fi__text-wrap.is--top,
+.section.is--full-img .full-img__wrap.is--vad-feature .fi__text-wrap.is--top .fi__text,
+.section.is--full-img .full-img__wrap.is--vad-feature .fi__text-wrap.is--top .fi__heading,
+.section.is--full-img .full-img__wrap.is--vad-feature .fi__text-wrap.is--top .fi__heading h2,
+.section.is--full-img .full-img__wrap.is--vad-feature .fi__text-wrap.is--top .fi__paragraph,
+.section.is--full-img .full-img__wrap.is--vad-feature .fi__text-wrap.is--top .fi__paragraph .paragraph {
+  color: #000 !important;
+  text-shadow: none !important;
+}
+
 .app,
 .content,
 .section,
