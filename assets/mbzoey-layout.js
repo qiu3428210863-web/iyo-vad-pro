@@ -223,9 +223,7 @@
     if (scrollUnlocked) return;
     if (event.type === 'keydown' && !scrollKeys.has(event.key)) return;
     event.preventDefault();
-    // Keep the original event flowing through the page so navigation and
-    // component motion handlers can still react while the document itself is
-    // pinned at the first screen.
+    event.stopPropagation();
   };
   const setScrollUnlocked = (unlocked) => {
     scrollUnlocked = unlocked;
@@ -273,11 +271,6 @@
   window.addEventListener('scroll', () => {
     if (!scrollUnlocked && window.scrollY > 0) window.scrollTo(0, 0);
   }, {passive: true});
-  // Browsers can restore the previous scroll position after a hard reload.
-  // Re-assert the first-screen lock once the restored frame is presented.
-  window.addEventListener('pageshow', () => {
-    if (!scrollUnlocked) window.requestAnimationFrame(() => window.scrollTo(0, 0));
-  }, {once: true});
 
   // The shaver belongs to the first screen only. A stationary pointer does not
   // emit pointerleave when the document scrolls underneath it, so visibility
