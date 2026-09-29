@@ -766,6 +766,9 @@ body {
     z-index: 2;
     width: 100%;
     padding-inline: var(--page-gutter);
+    /* Keep the copy clear of the following panel while leaving the dot
+       marker's top anchor and size unchanged. */
+    padding-bottom: 4vw;
   }
 
   .features__wrap.is--vad1 .product__image-wrap.is--vad1,
@@ -791,6 +794,12 @@ body {
 
   .features__wrap.is--vad1 .product__image-wrap.is--vad1 img {
     object-position: right center;
+  }
+
+  /* Restore the third panel's previous subject scale; the first panel keeps
+     its enlarged treatment. */
+  .features__wrap.is--3 .product__image-wrap.is--vad3 {
+    transform: translateX(-50%);
   }
 
   .features__wrap.is--3 .product__image-wrap.is--vad3 img {
