@@ -767,7 +767,9 @@ body {
     inset: 0 auto 0 50% !important;
     width: 100vw !important;
     height: 100% !important;
-    transform: translateX(-50%);
+    /* The move module starts subjects at scale(.9). Slightly enlarging the
+       image layer keeps that motion while clipping the resulting letterbox. */
+    transform: translateX(-50%) scale(1.28);
     transform-origin: center center;
     overflow: hidden;
   }
@@ -834,6 +836,13 @@ body {
   opacity: 1;
 }
 
+/* The first panel uses a bright subject scene, so its lower-right copy stays
+   pure white to match the requested visual treatment. */
+.features__wrap.is--vad1 .product__paragraph .paragraph {
+  color: #fff !important;
+  opacity: 1;
+}
+
 /* Keep the three lower-right descriptions readable at the same rhythm. The
    paragraph animator wraps characters in inline elements, so mirror the
    browser's normal inline flow and apply Chinese strict line breaking to keep
@@ -852,6 +861,8 @@ body {
 .features__wrap.is--vad1 .product__paragraph .paragraph > div,
 .features__wrap.is--vad2 .product__paragraph .paragraph > div,
 .features__wrap.is--3 .product__paragraph .paragraph > div {
+  display: block !important;
+  position: relative;
   text-align: justify !important;
   text-align-last: left !important;
   line-break: strict;
@@ -860,14 +871,10 @@ body {
 .features__wrap.is--vad1 .product__paragraph .paragraph > div > div,
 .features__wrap.is--vad2 .product__paragraph .paragraph > div > div,
 .features__wrap.is--3 .product__paragraph .paragraph > div > div {
-  display: contents !important;
-}
-
-/* The third description is split into line wrappers by the original animator.
-   Let those wrappers rejoin the paragraph's inline flow so its preserved
-   Latin spacing and the same CJK line-breaking rules are applied. */
-.features__wrap.is--3 .product__paragraph .paragraph > div {
-  display: inline !important;
+  /* Character wrappers remain inline so each independently animated line can
+     keep the original Chinese line breaking and punctuation rules. */
+  display: inline-block !important;
+  position: relative;
 }
 
 /* Keep the three feature headlines on one desktop line. Their text column was
