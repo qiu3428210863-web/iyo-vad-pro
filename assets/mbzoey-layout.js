@@ -45,6 +45,63 @@
   const highlightObserver = new MutationObserver(normalizeHighlightPunctuation);
   highlightObserver.observe(below, {childList: true, subtree: true});
 
+  // The feature-copy animator creates one block per visual line and one
+  // inline wrapper per character. A word-joiner before closing punctuation
+  // keeps the pair together in normal flow, but the animated line blocks can
+  // still be split at that boundary. Move any leading joiner + closing mark
+  // back to the previous line after the animator has rebuilt the text.
+  const featureClosingPunctuation = new Set([
+    '，', '。', '、', '！', '？', '；', '：', '…',
+    '）', '】', '》', '」', '』', '〕', '〉', '”', '’',
+    ',', '.', '!', '?', ';', ':', ')', ']', '}',
+  ]);
+  const featureInvisibleGlue = new Set(['\u2060', '\u200b', '\ufeff']);
+  const featureParagraphs = [...document.querySelectorAll(
+    '.section.is--features .product__paragraph .paragraph',
+  )];
+  let featureNormalizationFrame = 0;
+  let featureNormalizing = false;
+  const normalizeFeatureParagraph = (paragraph) => {
+    const lines = [...paragraph.children].filter((line) => line.children.length);
+    lines.forEach((line) => {
+      line.classList.toggle(
+        'mbzoey-feature-label',
+        paragraph.closest('.features__wrap.is--3') && line.textContent.trim() === 'LED',
+      );
+    });
+    for (let index = 1; index < lines.length; index += 1) {
+      const line = lines[index];
+      const characters = [...line.children];
+      if (!characters.length) continue;
+      let cursor = 0;
+      const glue = [];
+      while (cursor < characters.length && featureInvisibleGlue.has(characters[cursor].textContent)) {
+        glue.push(characters[cursor]);
+        cursor += 1;
+      }
+      const punctuation = characters[cursor];
+      if (!punctuation || !featureClosingPunctuation.has(punctuation.textContent)) continue;
+      const previousLine = lines[index - 1];
+      glue.forEach((character) => previousLine.appendChild(character));
+      previousLine.appendChild(punctuation);
+    }
+  };
+  const normalizeFeatureParagraphs = () => {
+    featureNormalizationFrame = 0;
+    if (featureNormalizing) return;
+    featureNormalizing = true;
+    featureParagraphs.forEach(normalizeFeatureParagraph);
+    featureNormalizing = false;
+  };
+  const featureParagraphObserver = new MutationObserver(() => {
+    if (featureNormalizing || featureNormalizationFrame) return;
+    featureNormalizationFrame = window.requestAnimationFrame(normalizeFeatureParagraphs);
+  });
+  featureParagraphs.forEach((paragraph) => {
+    featureParagraphObserver.observe(paragraph, {childList: true, subtree: true});
+  });
+  normalizeFeatureParagraphs();
+
   const interaction = document.createElement('div');
   interaction.className = 'mbzoey-shave-interaction';
   interaction.setAttribute('aria-label', '点击人脸即可剃须');

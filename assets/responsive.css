@@ -884,6 +884,34 @@ body {
   line-break: strict;
 }
 
+/* Each animated line is its own block, so only the final block should use
+   left alignment. Justify all preceding lines to keep their visible edges
+   aligned across the three feature panels. */
+.features__wrap.is--vad1 .product__paragraph .paragraph > div:not(:only-child):not(:last-child),
+.features__wrap.is--vad2 .product__paragraph .paragraph > div:not(:only-child):not(:last-child),
+.features__wrap.is--3 .product__paragraph .paragraph > div:not(:only-child):not(:last-child) {
+  display: flex !important;
+  align-items: baseline;
+  justify-content: space-between;
+  text-align-last: justify !important;
+}
+
+.features__wrap.is--vad1 .product__paragraph .paragraph > div:not(:only-child):last-child,
+.features__wrap.is--vad2 .product__paragraph .paragraph > div:not(:only-child):last-child,
+.features__wrap.is--3 .product__paragraph .paragraph > div:not(:only-child):last-child {
+  display: flex !important;
+  align-items: baseline;
+  justify-content: flex-start;
+  text-align-last: left !important;
+}
+
+/* Keep the short LED label compact instead of spreading its three letters
+   across the full paragraph width. */
+.features__wrap.is--3 .product__paragraph .paragraph > div.mbzoey-feature-label {
+  justify-content: flex-start !important;
+  text-align-last: left !important;
+}
+
 .features__wrap.is--vad1 .product__paragraph .paragraph > div > div,
 .features__wrap.is--vad2 .product__paragraph .paragraph > div > div,
 .features__wrap.is--3 .product__paragraph .paragraph > div > div {
